@@ -1,15 +1,29 @@
-# Securiti.ai Executive ROI & License Value
+# Securiti.ai License Value & Upsell ROI Dashboard
 
-Clean executive dashboards (no 3D) with Securiti + Veeam inspired blue→green theme and white cards.
+Interactive 3D dashboard aligned to the **Securiti sample BOM**.
 
-## Changes in this version
+## What clients do
 
-- **Removed** Data Under Management Structured / Unstructured from license checklist
-- **DSPM**: choose **only one** of Advanced / Enterprise / Enterprise Plus (radio)
-- **Normal 2D executive charts**: value mix, storage by cloud, 3-year projection, coverage vs gaps
-- **Entitlement vs need** includes DSPM upgrade path (e.g. Advanced → Enterprise or Plus)
-- Light theme: white cards, blue/teal/green accent gradient header
+1. Enter company + primary cloud (AWS / Azure / GCP / OCI)
+2. **Check every license they already have** (mirrors BOM products):
+   - Data Under Management (Structured / Unstructured)
+   - Workflow, Assessment, Data Mapping (RoPA)
+   - DSR Portal, Robotic DSR (1–100 systems)
+   - Vendor Risk, Breach Management
+   - Cookie / Universal / Mobile Consent (100K MAU slabs)
+   - Privacy Notice, DSPM Advanced / Enterprise / Plus
+3. Enter sizing: TB, % ROT, MAU, # systems, DSRs, assessments, vendors, workflows
+4. Instantly see:
+   - **What they get** (assessments, RoPA, workflows, DSR capacity, consent units, breach workflows)
+   - **Gaps / upsell** vs their need
+   - **ROT volume quarantined (TB)**
+   - **Storage cost savings** on AWS, Azure, GCP, OCI
+   - 3D bars + entitlement table
 
-## Host
+## Host on GitHub Pages
 
-Upload to GitHub Pages (Settings → Pages → main / root).
+Upload `index.html` + this README → Settings → Pages → main branch → root.
+
+## Disclaimer
+
+Illustrative model based on sample BOM packaging. Final commercial terms follow official Securiti quotes.
