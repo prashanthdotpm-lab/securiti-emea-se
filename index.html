@@ -12,171 +12,186 @@
       --blue-mid: #00A3E0;
       --teal: #00B2A9;
       --green: #7AB800;
-      --green-soft: #A8D08D;
       --orange: #E87722;
-      --bg: #F5F8FA;
-      --card: #FFFFFF;
+      --bg: linear-gradient(165deg, #E8F4FC 0%, #E6F7F5 45%, #F0F8E8 100%);
+      --card: rgba(255,255,255,0.92);
       --text: #1A2B3C;
       --muted: #5A6F7E;
-      --border: #D0DCE6;
+      --border: #B8D4E8;
       --input-bg: #FFF9E6;
-      --have: #2E7D32;
-      --gap: #C62828;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #E8F4FC;
+      background-image: linear-gradient(165deg, #D6EAF8 0%, #D5F5E3 50%, #E8F8E0 100%);
+      background-attachment: fixed;
       color: var(--text);
       min-height: 100vh;
     }
-    /* Hero band — blue→green network feel */
     .hero {
-      background: linear-gradient(120deg, #0077C8 0%, #00A3E0 40%, #00B2A9 70%, #7AB800 100%);
+      background: linear-gradient(120deg, #0077C8 0%, #00A3E0 38%, #00B2A9 68%, #7AB800 100%);
       color: white;
-      padding: 1.25rem 1.5rem 1.5rem;
+      padding: 1.2rem 1.5rem 1.4rem;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,61,107,0.2);
     }
     .hero::after {
       content: '';
       position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Cg stroke='%23ffffff' stroke-opacity='0.2' fill='%23ffffff' fill-opacity='0.35'%3E%3Cpath d='M0 180 Q100 120 200 100 T400 40' fill='none' stroke-width='1'/%3E%3Ccircle cx='50' cy='160' r='2'/%3E%3Ccircle cx='120' cy='130' r='2'/%3E%3Ccircle cx='200' cy='100' r='2.5'/%3E%3Ccircle cx='280' cy='70' r='2'/%3E%3Ccircle cx='350' cy='50' r='2'/%3E%3C/g%3E%3C/svg%3E") right center / 45% no-repeat;
-      opacity: 0.9; pointer-events: none;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='220'%3E%3Cg stroke='%23ffffff' stroke-opacity='0.25' fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M0 200 Q120 140 240 110 T500 30' fill='none' stroke-width='1.2'/%3E%3Ccircle cx='60' cy='175' r='2.5'/%3E%3Ccircle cx='140' cy='145' r='2'/%3E%3Ccircle cx='240' cy='110' r='3'/%3E%3Ccircle cx='340' cy='75' r='2'/%3E%3Ccircle cx='420' cy='50' r='2.5'/%3E%3C/g%3E%3C/svg%3E") right center / 50% no-repeat;
+      pointer-events: none;
     }
     .hero-inner { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
-    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand { display: flex; gap: 0.75rem; align-items: center; }
     .logo-mark {
-      width: 42px; height: 42px; border-radius: 10px; background: rgba(255,255,255,0.95);
-      display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--blue-dark); font-size: 0.7rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      width: 44px; height: 44px; border-radius: 11px; background: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 0.65rem; color: var(--blue-dark);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
     }
-    .hero h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
-    .hero p { font-size: 0.82rem; opacity: 0.95; margin-top: 0.2rem; max-width: 520px; }
-    .hero-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .btn {
-      border: none; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600; cursor: pointer;
-    }
+    .hero h1 { font-size: 1.3rem; font-weight: 700; }
+    .hero p { font-size: 0.8rem; opacity: 0.95; margin-top: 0.2rem; max-width: 560px; }
+    .btn { border: none; border-radius: 8px; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
     .btn-white { background: white; color: var(--blue-dark); }
-    .btn-ghost { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.45); }
+    .btn-ghost { background: rgba(255,255,255,0.18); color: white; border: 1px solid rgba(255,255,255,0.45); }
 
     .layout {
-      display: grid; grid-template-columns: 340px 1fr; gap: 1.1rem;
-      padding: 1.1rem; max-width: 1440px; margin: 0 auto;
+      display: grid; grid-template-columns: 330px 1fr; gap: 1rem;
+      padding: 1rem; max-width: 1440px; margin: 0 auto;
     }
     @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
 
     .sidebar {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 1rem; max-height: calc(100vh - 100px); overflow-y: auto;
-      position: sticky; top: 0.75rem; box-shadow: 0 2px 12px rgba(0,61,107,0.06);
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(232,248,245,0.9));
+      border: 1px solid var(--border); border-radius: 14px; padding: 1rem;
+      max-height: calc(100vh - 90px); overflow-y: auto; position: sticky; top: 0.75rem;
+      box-shadow: 0 4px 18px rgba(0,119,200,0.08);
     }
     @media (max-width: 1024px) { .sidebar { position: static; max-height: none; } }
     .sidebar h2 {
-      font-size: 0.8rem; color: var(--blue-dark); text-transform: uppercase; letter-spacing: 0.04em;
-      margin: 0.9rem 0 0.5rem; padding-bottom: 0.35rem; border-bottom: 2px solid var(--teal);
+      font-size: 0.78rem; color: var(--blue-dark); text-transform: uppercase; letter-spacing: 0.04em;
+      margin: 0.85rem 0 0.45rem; padding-bottom: 0.3rem;
+      border-bottom: 2px solid transparent;
+      border-image: linear-gradient(90deg, var(--blue), var(--teal), var(--green)) 1;
     }
     .sidebar h2:first-child { margin-top: 0; }
-    label { display: block; font-size: 0.72rem; font-weight: 600; color: var(--muted); margin-bottom: 0.15rem; }
+    label { display: block; font-size: 0.7rem; font-weight: 600; color: var(--muted); margin-bottom: 0.12rem; }
     input[type=text], input[type=number], select {
-      width: 100%; padding: 0.4rem 0.5rem; border: 1px solid var(--border); border-radius: 6px;
-      font-size: 0.82rem; background: var(--input-bg); color: #0D47A1; font-weight: 600; margin-bottom: 0.45rem;
+      width: 100%; padding: 0.38rem 0.5rem; border: 1px solid var(--border); border-radius: 7px;
+      font-size: 0.8rem; background: var(--input-bg); color: #0D47A1; font-weight: 600; margin-bottom: 0.4rem;
     }
-    .hint { font-size: 0.65rem; color: var(--muted); margin: -0.25rem 0 0.4rem; }
+    .hint { font-size: 0.64rem; color: var(--muted); margin: -0.2rem 0 0.35rem; }
     .chk-row, .radio-row {
-      display: flex; gap: 0.45rem; align-items: flex-start; padding: 0.35rem 0.3rem;
-      border-radius: 6px; cursor: pointer; font-size: 0.76rem;
+      display: flex; gap: 0.4rem; align-items: flex-start; padding: 0.32rem 0.3rem;
+      border-radius: 6px; cursor: pointer; font-size: 0.75rem;
     }
-    .chk-row:hover, .radio-row:hover { background: #F0F7FA; }
-    .chk-row input, .radio-row input { margin-top: 0.2rem; accent-color: var(--blue); }
+    .chk-row:hover, .radio-row:hover { background: rgba(0,163,224,0.08); }
     .radio-group {
-      border: 1px solid var(--border); border-radius: 8px; padding: 0.35rem; background: #FAFCFD; margin-bottom: 0.5rem;
+      border: 1px solid var(--border); border-radius: 10px; padding: 0.4rem;
+      background: linear-gradient(135deg, #E3F2FD, #E8F5E9); margin-bottom: 0.45rem;
     }
 
-    .main { display: flex; flex-direction: column; gap: 1rem; }
-    .kpi-row {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.65rem;
-    }
+    .main { display: flex; flex-direction: column; gap: 0.9rem; }
+    .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; }
     .kpi {
-      background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem;
-      box-shadow: 0 1px 4px rgba(0,61,107,0.05); border-top: 3px solid var(--blue);
+      background: linear-gradient(160deg, #fff, #F0F9FF);
+      border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem;
+      box-shadow: 0 2px 10px rgba(0,119,200,0.07); border-top: 3px solid var(--blue);
     }
-    .kpi.save { border-top-color: var(--green); }
-    .kpi.gap { border-top-color: var(--orange); }
-    .kpi .label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
-    .kpi .value { font-size: 1.25rem; font-weight: 800; color: var(--blue-dark); margin-top: 0.2rem; }
-    .kpi .sub { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
+    .kpi.save { border-top-color: var(--green); background: linear-gradient(160deg, #fff, #F1F8E9); }
+    .kpi.warn { border-top-color: var(--orange); background: linear-gradient(160deg, #fff, #FFF8E1); }
+    .kpi.muted-kpi { border-top-color: #90A4AE; opacity: 0.85; }
+    .kpi .label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; }
+    .kpi .value { font-size: 1.15rem; font-weight: 800; color: var(--blue-dark); margin-top: 0.15rem; }
+    .kpi .sub { font-size: 0.65rem; color: var(--muted); margin-top: 0.12rem; }
 
     .card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem;
-      box-shadow: 0 1px 6px rgba(0,61,107,0.05);
+      background: linear-gradient(165deg, rgba(255,255,255,0.97), rgba(227,242,253,0.5));
+      border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.1rem;
+      box-shadow: 0 3px 14px rgba(0,119,200,0.07);
     }
     .card h3 {
-      font-size: 0.95rem; color: var(--blue-dark); margin-bottom: 0.65rem;
-      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.92rem; color: var(--blue-dark); margin-bottom: 0.6rem;
+      display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;
     }
-    .card h3 .tag {
-      font-size: 0.65rem; font-weight: 700; background: #E3F2FD; color: var(--blue);
-      padding: 0.15rem 0.45rem; border-radius: 999px;
+    .tag {
+      font-size: 0.62rem; font-weight: 700; background: linear-gradient(90deg, #E3F2FD, #E8F5E9);
+      color: var(--blue); padding: 0.15rem 0.45rem; border-radius: 999px; border: 1px solid var(--border);
     }
-    .dash-tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem; }
+    .dash-tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.7rem; }
     .dtab {
       border: 1px solid var(--border); background: white; color: var(--muted);
-      border-radius: 999px; padding: 0.35rem 0.8rem; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+      border-radius: 999px; padding: 0.32rem 0.75rem; font-size: 0.72rem; font-weight: 600; cursor: pointer;
     }
-    .dtab.active { background: var(--blue); color: white; border-color: var(--blue); }
+    .dtab.active {
+      background: linear-gradient(135deg, var(--blue), var(--teal)); color: white; border-color: transparent;
+    }
     .dash-panel { display: none; }
     .dash-panel.active { display: block; }
-    .chart-box { position: relative; height: 260px; }
-    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .chart-box { position: relative; height: 250px; background: rgba(255,255,255,0.7); border-radius: 10px; padding: 0.35rem; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
     @media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
 
     .explain {
-      background: linear-gradient(135deg, #E8F5E9, #E3F2FD); border-radius: 8px;
-      padding: 0.75rem 0.9rem; font-size: 0.78rem; color: var(--text); margin-top: 0.65rem; line-height: 1.45;
+      background: linear-gradient(135deg, rgba(232,245,233,0.9), rgba(227,242,253,0.9));
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 0.7rem 0.85rem; font-size: 0.76rem; margin-top: 0.6rem; line-height: 1.45;
     }
     .explain strong { color: var(--blue-dark); }
-
-    .need-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-    .need-table th {
-      text-align: left; padding: 0.5rem; background: #F0F5F8; color: var(--blue-dark);
-      border-bottom: 2px solid var(--border); font-size: 0.72rem; text-transform: uppercase;
+    .locked {
+      background: linear-gradient(135deg, #FFEBEE, #FFF3E0); border-color: #FFCC80;
+      color: #5D4037;
     }
-    .need-table td { padding: 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
-    .need-table tr:hover { background: #F7FBFC; }
-    .ok { color: var(--have); font-weight: 700; }
+
+    .need-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+    .need-table th {
+      text-align: left; padding: 0.45rem 0.5rem;
+      background: linear-gradient(90deg, #E3F2FD, #E8F5E9); color: var(--blue-dark);
+      border-bottom: 2px solid var(--border); font-size: 0.7rem; text-transform: uppercase;
+    }
+    .need-table td { padding: 0.45rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .need-table tr:hover { background: rgba(0,163,224,0.05); }
+    .ok { color: #2E7D32; font-weight: 700; }
     .up { color: #F9A825; font-weight: 700; }
-    .miss { color: var(--gap); font-weight: 700; }
+    .miss { color: #C62828; font-weight: 700; }
     .chip {
-      display: inline-block; margin-top: 0.25rem; padding: 0.2rem 0.5rem; border-radius: 6px;
-      font-size: 0.68rem; font-weight: 600; background: #FFF8E1; color: #F57F17;
+      display: inline-block; margin-top: 0.2rem; padding: 0.18rem 0.45rem; border-radius: 6px;
+      font-size: 0.66rem; font-weight: 600; background: #FFF8E1; color: #E65100; border: 1px solid #FFE082;
     }
 
     .upsell {
-      background: #FFF8E1; border: 1px solid #FFE082; border-radius: 10px; padding: 0.85rem 1rem;
+      background: linear-gradient(135deg, #FFF8E1, #E8F5E9);
+      border: 1px solid #FFE082; border-radius: 12px; padding: 0.9rem 1rem;
     }
-    .upsell h4 { color: #E65100; font-size: 0.88rem; margin-bottom: 0.35rem; }
-    .upsell ul { margin-left: 1.1rem; font-size: 0.8rem; color: #5D4037; }
+    .upsell h4 { color: #E65100; font-size: 0.88rem; margin-bottom: 0.4rem; }
+    .upsell .driver {
+      font-size: 0.72rem; color: var(--blue-dark); margin-bottom: 0.45rem;
+      padding: 0.4rem 0.55rem; background: rgba(255,255,255,0.7); border-radius: 8px;
+    }
+    .upsell ul { margin-left: 1.1rem; font-size: 0.78rem; color: #5D4037; }
+    .upsell li { margin-bottom: 0.35rem; }
 
-    .mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; }
+    .mod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 0.5rem; }
     .mod {
-      border-radius: 8px; padding: 0.6rem 0.7rem; font-size: 0.76rem; border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.55rem 0.65rem; font-size: 0.74rem; border: 1px solid var(--border);
     }
-    .mod.yes { background: #E8F5E9; border-color: #A5D6A7; }
-    .mod.no { background: #FFEBEE; border-color: #EF9A9A; }
-    .mod .n { font-weight: 700; margin-bottom: 0.15rem; }
-    .mod.yes .n { color: var(--have); }
-    .mod.no .n { color: var(--gap); }
+    .mod.yes { background: linear-gradient(160deg, #E8F5E9, #fff); border-color: #A5D6A7; }
+    .mod.no { background: linear-gradient(160deg, #FFEBEE, #fff); border-color: #EF9A9A; }
+    .mod .n { font-weight: 700; margin-bottom: 0.12rem; }
+    .mod.yes .n { color: #2E7D32; }
+    .mod.no .n { color: #C62828; }
 
     footer {
-      text-align: center; padding: 1.25rem; font-size: 0.72rem; color: var(--muted);
-      border-top: 1px solid var(--border); margin-top: 0.5rem; background: white;
+      text-align: center; padding: 1.1rem; font-size: 0.7rem; color: white;
+      background: linear-gradient(120deg, #0077C8, #00B2A9, #7AB800); margin-top: 0.5rem;
     }
 
     .chat-toggle {
       position: fixed; bottom: 1.2rem; right: 1.2rem; width: 52px; height: 52px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--blue), var(--teal)); color: white; border: none;
-      font-size: 1.35rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,119,200,0.35); z-index: 50;
+      background: linear-gradient(135deg, var(--blue), var(--green)); color: white; border: none;
+      font-size: 1.3rem; cursor: pointer; box-shadow: 0 4px 16px rgba(0,119,200,0.35); z-index: 50;
     }
     .chat-panel {
       position: fixed; bottom: 5.2rem; right: 1.2rem; width: 340px; max-width: calc(100vw - 2rem);
@@ -184,19 +199,14 @@
       box-shadow: 0 8px 28px rgba(0,0,0,0.12); display: none; flex-direction: column; z-index: 50; overflow: hidden;
     }
     .chat-panel.open { display: flex; }
-    .chat-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue)); color: white; padding: 0.75rem 1rem; font-weight: 600; font-size: 0.85rem; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.45rem; background: #F7FAFC; }
-    .msg { max-width: 88%; padding: 0.5rem 0.65rem; border-radius: 10px; font-size: 0.78rem; }
+    .chat-header { background: linear-gradient(135deg, var(--blue-dark), var(--teal)); color: white; padding: 0.7rem 1rem; font-weight: 600; font-size: 0.85rem; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 0.7rem; display: flex; flex-direction: column; gap: 0.4rem; background: #F0F7FA; }
+    .msg { max-width: 88%; padding: 0.45rem 0.6rem; border-radius: 10px; font-size: 0.76rem; }
     .msg.bot { background: white; border: 1px solid var(--border); align-self: flex-start; }
     .msg.user { background: var(--blue); color: white; align-self: flex-end; }
-    .chat-input-row { display: flex; gap: 0.35rem; padding: 0.55rem; border-top: 1px solid var(--border); }
+    .chat-input-row { display: flex; gap: 0.35rem; padding: 0.5rem; border-top: 1px solid var(--border); }
     .chat-input-row input { flex: 1; margin: 0; background: white; }
-    .chat-input-row button { background: var(--blue); color: white; border: none; border-radius: 8px; padding: 0 0.85rem; font-weight: 600; cursor: pointer; }
-
-    @media print {
-      .sidebar, .chat-toggle, .chat-panel, .hero-actions { display: none !important; }
-      .layout { grid-template-columns: 1fr; }
-    }
+    .chat-input-row button { background: linear-gradient(135deg, var(--blue), var(--teal)); color: white; border: none; border-radius: 8px; padding: 0 0.8rem; font-weight: 600; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -206,10 +216,10 @@
         <div class="logo-mark">S · V</div>
         <div>
           <h1>Securiti.ai Executive ROI &amp; License Value</h1>
-          <p>Select your DSPM tier &amp; modules · See entitlements, gaps, storage &amp; DSR savings · Share with leadership</p>
+          <p>ROI only for modules you own · Plan upgrades for compliance, cyber exposure &amp; business goals</p>
         </div>
       </div>
-      <div class="hero-actions">
+      <div style="display:flex;gap:0.45rem">
         <button class="btn btn-ghost" onclick="resetDefaults()">Reset</button>
         <button class="btn btn-white" onclick="window.print()">Print / PDF</button>
       </div>
@@ -223,7 +233,7 @@
       <input id="company" type="text" value="Example Telecom Co." oninput="recalc()" />
       <label>Industry</label>
       <input id="industry" type="text" value="Telecommunications" oninput="recalc()" />
-      <label>Primary cloud storage</label>
+      <label>Primary cloud</label>
       <select id="cloud" onchange="recalc()">
         <option value="aws">AWS</option>
         <option value="azure">Azure</option>
@@ -234,73 +244,72 @@
 
       <h2>2. DSPM package (pick one)</h2>
       <div class="radio-group">
-        <label class="radio-row"><input type="radio" name="dspm" value="none" onchange="recalc()" /> <span>None / evaluating</span></label>
-        <label class="radio-row"><input type="radio" name="dspm" value="advanced" onchange="recalc()" /> <span><strong>DSPM Advanced</strong></span></label>
-        <label class="radio-row"><input type="radio" name="dspm" value="enterprise" checked onchange="recalc()" /> <span><strong>DSPM Enterprise</strong></span></label>
-        <label class="radio-row"><input type="radio" name="dspm" value="enterprise_plus" onchange="recalc()" /> <span><strong>DSPM Enterprise Plus</strong></span></label>
+        <label class="radio-row"><input type="radio" name="dspm" value="none" onchange="recalc()" /> None / evaluating</label>
+        <label class="radio-row"><input type="radio" name="dspm" value="advanced" checked onchange="recalc()" /> <strong>DSPM Advanced</strong> — discovery &amp; classification only</label>
+        <label class="radio-row"><input type="radio" name="dspm" value="enterprise" onchange="recalc()" /> <strong>DSPM Enterprise</strong> — posture, compliance, automation</label>
+        <label class="radio-row"><input type="radio" name="dspm" value="enterprise_plus" onchange="recalc()" /> <strong>DSPM Enterprise Plus</strong> — + remediation</label>
       </div>
-      <p class="hint">Only one package. Advanced → Enterprise → Plus upgrade path is calculated automatically.</p>
+      <p class="hint">Advanced does <em>not</em> include ROT remediation ROI. Enterprise/Plus unlock storage savings from quarantine.</p>
 
-      <h2>3. Other Securiti licenses</h2>
+      <h2>3. Other licenses</h2>
       <div id="licenseChecks"></div>
 
-      <h2>4. Environment sizing</h2>
+      <h2>4. Sizing</h2>
       <label>Structured data (TB)</label>
       <input id="structTB" type="number" value="100" oninput="recalc()" />
       <label>Unstructured data (TB)</label>
       <input id="unstructTB" type="number" value="100" oninput="recalc()" />
-      <label>% unstructured that is ROT</label>
+      <label>% ROT of unstructured</label>
       <input id="rotPct" type="number" value="28" oninput="recalc()" />
-      <label>% ROT quarantined / deleted</label>
+      <label>% ROT remediable</label>
       <input id="rotRemediate" type="number" value="70" oninput="recalc()" />
-      <label>Storage cost $/TB / year</label>
+      <label>Storage $/TB / year</label>
       <input id="storageCost" type="number" value="3351" oninput="recalc()" />
-      <label>Data systems (Robotic DSR)</label>
+      <label>Robotic DSR systems</label>
       <input id="dsrSystems" type="number" value="25" oninput="recalc()" />
-      <label>DSRs per year</label>
+      <label>DSRs / year</label>
       <input id="dsrsYear" type="number" value="400" oninput="recalc()" />
       <label>Cost per manual DSR ($)</label>
       <input id="costDSR" type="number" value="1524" oninput="recalc()" />
-      <label>Cookie Consent MAU</label>
+      <label>Cookie MAU</label>
       <input id="cookieMAU" type="number" value="1000000" oninput="recalc()" />
       <label>Universal Consent MAU</label>
       <input id="univMAU" type="number" value="200000" oninput="recalc()" />
       <label>Mobile Consent MAU</label>
       <input id="mobileMAU" type="number" value="200000" oninput="recalc()" />
-      <label>Vendor assessments / year</label>
+      <label>Vendors / year</label>
       <input id="vendors" type="number" value="50" oninput="recalc()" />
-      <label>Internal assessments / year</label>
+      <label>Assessments / year</label>
       <input id="assessments" type="number" value="20" oninput="recalc()" />
-      <label>Privacy workflows needed</label>
+      <label>Workflows needed</label>
       <input id="workflows" type="number" value="15" oninput="recalc()" />
-      <label>Breach events est. / year</label>
+      <label>Breach events / year</label>
       <input id="breaches" type="number" value="4" oninput="recalc()" />
     </aside>
 
     <main class="main">
       <div class="kpi-row">
-        <div class="kpi save"><div class="label">ROT quarantined</div><div class="value" id="kpiRot">—</div><div class="sub">TB / year</div></div>
-        <div class="kpi save"><div class="label">Annual storage save</div><div class="value" id="kpiStor">—</div><div class="sub" id="kpiCloud">on cloud</div></div>
-        <div class="kpi save"><div class="label">3YR hard $ benefit</div><div class="value" id="kpiHard3">—</div><div class="sub">ROT + DSR opex</div></div>
-        <div class="kpi"><div class="label">DSPM tier</div><div class="value" id="kpiTier" style="font-size:1rem">—</div><div class="sub" id="kpiTierSub">current</div></div>
-        <div class="kpi gap"><div class="label">Upsell gaps</div><div class="value" id="kpiGaps">—</div><div class="sub">recommended adds</div></div>
+        <div class="kpi" id="kpiBoxRot"><div class="label">ROT savings (licensed)</div><div class="value" id="kpiRot">—</div><div class="sub" id="kpiRotSub">requires Enterprise+</div></div>
+        <div class="kpi" id="kpiBoxDsr"><div class="label">DSR opex save 3YR</div><div class="value" id="kpiDsr">—</div><div class="sub" id="kpiDsrSub">needs Portal / Robotic</div></div>
+        <div class="kpi save"><div class="label">Licensed hard $ 3YR</div><div class="value" id="kpiHard3">—</div><div class="sub">only modules you own</div></div>
+        <div class="kpi"><div class="label">DSPM tier</div><div class="value" id="kpiTier" style="font-size:0.95rem">—</div><div class="sub" id="kpiTierSub"></div></div>
+        <div class="kpi warn"><div class="label">Upsell items</div><div class="value" id="kpiGaps">—</div><div class="sub">business-driven</div></div>
       </div>
 
       <div class="upsell" id="upsellBox">
-        <h4 id="upsellTitle">Recommendations</h4>
+        <h4 id="upsellTitle">Upsell recommendations</h4>
+        <div class="driver" id="upsellDrivers"></div>
         <ul id="upsellList"></ul>
       </div>
 
-      <!-- Executive dashboards (2D) -->
       <div class="card">
-        <h3>Executive ROI dashboards <span class="tag">Summary views</span></h3>
+        <h3>Executive ROI dashboards <span class="tag">Licensed benefits only</span></h3>
         <div class="dash-tabs">
           <button type="button" class="dtab active" data-p="0">Value overview</button>
           <button type="button" class="dtab" data-p="1">Storage by cloud</button>
           <button type="button" class="dtab" data-p="2">3-year projection</button>
           <button type="button" class="dtab" data-p="3">Coverage vs gaps</button>
         </div>
-
         <div class="dash-panel active" id="panel0">
           <div class="two">
             <div class="chart-box"><canvas id="chartMix"></canvas></div>
@@ -309,15 +318,15 @@
           <div class="explain" id="explain0"></div>
         </div>
         <div class="dash-panel" id="panel1">
-          <div class="chart-box" style="height:280px"><canvas id="chartCloud"></canvas></div>
+          <div class="chart-box" style="height:270px"><canvas id="chartCloud"></canvas></div>
           <div class="explain" id="explain1"></div>
         </div>
         <div class="dash-panel" id="panel2">
-          <div class="chart-box" style="height:280px"><canvas id="chartYear"></canvas></div>
+          <div class="chart-box" style="height:270px"><canvas id="chartYear"></canvas></div>
           <div class="explain" id="explain2"></div>
         </div>
         <div class="dash-panel" id="panel3">
-          <div class="chart-box" style="height:280px"><canvas id="chartCover"></canvas></div>
+          <div class="chart-box" style="height:270px"><canvas id="chartCover"></canvas></div>
           <div class="explain" id="explain3"></div>
         </div>
       </div>
@@ -328,22 +337,20 @@
       </div>
 
       <div class="card">
-        <h3>Entitlement vs need <span class="tag">Upgrade paths included</span></h3>
+        <h3>Entitlement vs need <span class="tag">Upgrade paths</span></h3>
         <div id="entitleTable" style="overflow-x:auto"></div>
       </div>
     </main>
   </div>
 
-  <footer>
-    Securiti.ai · Executive ROI model (illustrative) · DSPM packaging &amp; BOM-aligned modules · Validate with official quote · Theme inspired by Securiti &amp; Veeam visual language
-  </footer>
+  <footer>Securiti.ai · ROI counted only for licensed modules · Advanced = discovery/classification (no ROT remediation ROI) · Enterprise/Plus unlock storage savings · Compare hard $ to your Securiti quote</footer>
 
   <button class="chat-toggle" onclick="toggleChat()">💬</button>
   <div class="chat-panel" id="chatPanel">
     <div class="chat-header">Securiti Value Assistant</div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-row">
-      <input id="chatInput" placeholder="Ask about ROI, DSPM tiers, consent…" onkeydown="if(event.key==='Enter')sendChat()" />
+      <input id="chatInput" placeholder="Ask about licensed ROI, upgrades…" onkeydown="if(event.key==='Enter')sendChat()" />
       <button onclick="sendChat()">Send</button>
     </div>
   </div>
@@ -352,14 +359,14 @@
     const $ = id => document.getElementById(id);
     const num = id => parseFloat($(id).value) || 0;
     const fmt = n => {
-      if (Math.abs(n) >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
-      if (Math.abs(n) >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
-      if (Math.abs(n) >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
-      return '$' + Math.round(n).toLocaleString();
+      if (!n) return '$0';
+      if (Math.abs(n) >= 1e9) return '$'+(n/1e9).toFixed(2)+'B';
+      if (Math.abs(n) >= 1e6) return '$'+(n/1e6).toFixed(2)+'M';
+      if (Math.abs(n) >= 1e3) return '$'+(n/1e3).toFixed(1)+'K';
+      return '$'+Math.round(n).toLocaleString();
     };
     const fmtN = n => Math.round(n).toLocaleString();
     const CLOUD = { aws:'AWS', azure:'Azure', gcp:'GCP', oci:'OCI', mixed:'Multi-cloud' };
-    const CF = { aws:1, azure:0.98, gcp:0.95, oci:0.92, mixed:1 };
 
     const CATALOG = [
       { id: 'workflow', name: 'Workflow Automation', out: s => `Supports ~${s.workflows} privacy workflows` },
@@ -408,57 +415,123 @@
       return d === 'enterprise_plus' ? 'Enterprise Plus' : d === 'enterprise' ? 'Enterprise' : d === 'advanced' ? 'Advanced' : 'None';
     }
 
+    // ROT remediation ROI only for Enterprise or Plus (not Advanced)
+    function canRotROI(dspm) {
+      return dspm === 'enterprise' || dspm === 'enterprise_plus';
+    }
+
     function recalc() {
       const s = state();
-      const rotTB = s.unstructTB * s.rotPct * s.rotRemediate;
-      const annualStor = rotTB * s.storageCost;
+      const tier = tierLabel(s.dspm);
+      const rotPotentialTB = s.unstructTB * s.rotPct * s.rotRemediate;
+      const rotUnlocked = canRotROI(s.dspm);
+      const annualStor = rotUnlocked ? rotPotentialTB * s.storageCost : 0;
       const stor3 = annualStor * 3;
-      const dsr3 = s.dsrsYear * (1 + 1.72 + 1.72*1.72) * s.costDSR * 0.60;
+
+      // DSR ROI only if Portal or Robotic owned
+      const dsrLicensed = s.owned.dsr_portal || s.owned.robotic_dsr;
+      const dsr3Potential = s.dsrsYear * (1 + 1.72 + 1.72*1.72) * s.costDSR * 0.60;
+      const dsr3 = dsrLicensed ? dsr3Potential : 0;
+
       const hard3 = stor3 + dsr3;
       const hardY = annualStor + dsr3 / 3;
-      const tier = tierLabel(s.dspm);
 
-      // Gaps
+      // Upsell with business drivers
       const gaps = [];
-      if (s.dspm === 'none') gaps.push('Select a DSPM package (recommend Enterprise or Plus)');
-      if (s.dspm === 'advanced') gaps.push('Upgrade DSPM Advanced → Enterprise (posture, compliance, automation) or Enterprise Plus (remediation)');
-      if (s.dspm === 'enterprise') gaps.push('Optional: Upgrade Enterprise → Enterprise Plus for remediation & access controls');
-      if (!s.owned.workflow && s.workflows > 0 && s.dspm === 'none') gaps.push('Workflow Automation');
-      if (!s.owned.assessment && s.assessments > 0) gaps.push('Assessment Automation');
-      if (!s.owned.datamapping) gaps.push('Data Mapping Automation (RoPA)');
-      if (!s.owned.dsr_portal && s.dsrsYear > 0) gaps.push('DSR Portal & Workbench');
-      if (!s.owned.robotic_dsr && s.dsrSystems > 0) gaps.push('Robotic DSR Automation');
-      if (!s.owned.vendor && s.vendors > 0) gaps.push('Vendor Risk Management');
-      if (!s.owned.breach) gaps.push('Data Breach Management');
-      if (!s.owned.cookie && s.cookieMAU > 0) gaps.push('Cookie Consent Enterprise');
-      if (!s.owned.univ_consent && s.univMAU > 0) gaps.push('Universal Consent');
-      if (!s.owned.mobile && s.mobileMAU > 0) gaps.push('Mobile Consent');
-      if (!s.owned.privacy_notice) gaps.push('Privacy Notice Management');
+      const drivers = [];
 
-      $('kpiRot').textContent = rotTB.toFixed(1) + ' TB';
-      $('kpiStor').textContent = fmt(annualStor);
-      $('kpiCloud').textContent = 'on ' + CLOUD[s.cloud];
+      if (s.dspm === 'none') {
+        gaps.push({ title: 'Add a DSPM package', why: 'Business need: sensitive-data discovery baseline for compliance & cyber exposure reduction' });
+      }
+      if (s.dspm === 'advanced') {
+        gaps.push({
+          title: 'Upgrade DSPM Advanced → Enterprise or Enterprise Plus',
+          why: 'Advanced = discovery & classification only. Enterprise adds posture, compliance scoring, access intelligence & automation. Plus adds remediation (quarantine) so you can realize ROT storage ROI on ' + CLOUD[s.cloud] + '.'
+        });
+        drivers.push('Cyber exposure: without Enterprise posture/automation you lack continuous risk scoring & policy automation');
+        drivers.push('Compliance: Enterprise maps controls to frameworks; Advanced stops at finding data');
+        drivers.push('Cost: ROT storage savings (' + fmt(rotPotentialTB * s.storageCost) + '/yr potential) stay locked until remediation tier (Enterprise/Plus)');
+      }
+      if (s.dspm === 'enterprise') {
+        gaps.push({
+          title: 'Optional: Upgrade Enterprise → Enterprise Plus',
+          why: 'Plus adds data/cloud remediation, access masking & row filtering for closed-loop risk reduction'
+        });
+      }
+      if (!s.owned.privacy_notice) {
+        gaps.push({
+          title: 'Privacy Notice Management',
+          why: 'Compliance & transparency: centralize notice lifecycle for regulators and customers; often paired with Consent modules'
+        });
+      }
+      if (!s.owned.assessment && s.assessments > 0)
+        gaps.push({ title: 'Assessment Automation', why: 'Compliance program efficiency: unlimited assessments vs ~' + s.assessments + '/yr need' });
+      if (!s.owned.datamapping)
+        gaps.push({ title: 'Data Mapping (RoPA)', why: 'Regulatory duty: continuous records of processing & cross-border flows' });
+      if (!s.owned.dsr_portal && s.dsrsYear > 0)
+        gaps.push({ title: 'DSR Portal & Workbench', why: 'Compliance SLA: intake for ~' + fmtN(s.dsrsYear) + ' DSRs/yr' });
+      if (!s.owned.robotic_dsr && s.dsrSystems > 0)
+        gaps.push({ title: 'Robotic DSR Automation', why: 'Operational efficiency across ' + s.dsrSystems + ' systems; unlocks DSR opex ROI' });
+      if (!s.owned.vendor && s.vendors > 0)
+        gaps.push({ title: 'Vendor Risk Management', why: 'Third-party cyber & privacy exposure across ~' + s.vendors + ' vendors' });
+      if (!s.owned.breach)
+        gaps.push({ title: 'Data Breach Management', why: 'Incident readiness & regulatory notification workflows' });
+      if (!s.owned.cookie && s.cookieMAU > 0)
+        gaps.push({ title: 'Cookie Consent Enterprise', why: 'Digital compliance for ' + fmtN(s.cookieMAU) + ' MAU' });
+      if (!s.owned.univ_consent && s.univMAU > 0)
+        gaps.push({ title: 'Universal Consent', why: 'Omnichannel preference governance' });
+      if (!s.owned.mobile && s.mobileMAU > 0)
+        gaps.push({ title: 'Mobile Consent', why: 'App-store & privacy-law alignment for mobile MAU' });
+      if (!s.owned.workflow && s.dspm === 'none' && s.workflows > 0)
+        gaps.push({ title: 'Workflow Automation', why: 'Orchestrate privacy operations at scale' });
+
+      // KPIs
+      const rotBox = $('kpiBoxRot');
+      if (rotUnlocked) {
+        rotBox.className = 'kpi save';
+        $('kpiRot').textContent = fmt(annualStor);
+        $('kpiRotSub').textContent = rotPotentialTB.toFixed(1) + ' TB on ' + CLOUD[s.cloud];
+      } else {
+        rotBox.className = 'kpi muted-kpi';
+        $('kpiRot').textContent = '$0';
+        $('kpiRotSub').textContent = s.dspm === 'advanced'
+          ? 'Locked — Advanced has no remediation ROI'
+          : 'Requires DSPM Enterprise or Plus';
+      }
+
+      const dsrBox = $('kpiBoxDsr');
+      if (dsrLicensed) {
+        dsrBox.className = 'kpi save';
+        $('kpiDsr').textContent = fmt(dsr3);
+        $('kpiDsrSub').textContent = 'Portal/Robotic licensed';
+      } else {
+        dsrBox.className = 'kpi muted-kpi';
+        $('kpiDsr').textContent = '$0';
+        $('kpiDsrSub').textContent = 'License DSR Portal or Robotic to unlock';
+      }
+
       $('kpiHard3').textContent = fmt(hard3);
       $('kpiTier').textContent = tier;
-      $('kpiTierSub').textContent = s.dspm === 'advanced' ? 'Upgrade recommended' : s.dspm === 'none' ? 'Not selected' : 'Selected';
+      $('kpiTierSub').textContent = s.dspm === 'advanced' ? 'Discovery & classification only' : s.dspm === 'enterprise' ? 'Posture + automation' : s.dspm === 'enterprise_plus' ? 'Full + remediation' : 'Not selected';
       $('kpiGaps').textContent = gaps.length;
 
-      $('upsellTitle').textContent = gaps.length ? `Upsell for ${s.company}` : `${s.company}: strong coverage`;
-      $('upsellList').innerHTML = (gaps.length ? gaps : ['Expand data volume or add AI Governance']).map(g => `<li>${g}</li>`).join('');
+      // Upsell panel
+      $('upsellTitle').textContent = 'Upsell for ' + s.company;
+      let driverHtml = '<strong>Plan upgrades from business drivers:</strong> compliance obligations, cybersecurity exposure reduction, operational efficiency, cloud cost control.';
+      if (drivers.length) driverHtml += '<br>' + drivers.map(d => '• ' + d).join('<br>');
+      $('upsellDrivers').innerHTML = driverHtml;
+      $('upsellList').innerHTML = gaps.map(g => `<li><strong>${g.title}</strong><br><span style="font-size:0.72rem;color:#6D4C41">${g.why}</span></li>`).join('')
+        || '<li>Coverage looks strong — expand data scope or AI Governance as next step</li>';
 
-      // Module cards
+      // Module cards — correct Advanced text
       const mods = $('moduleOutputs');
       mods.innerHTML = '';
-      // DSPM card first
       const dspmCard = document.createElement('div');
       dspmCard.className = 'mod ' + (s.dspm !== 'none' ? 'yes' : 'no');
-      const dspmText = s.dspm === 'advanced'
-        ? 'Command Center, Inventory, Scan, Classify, Insights, Workflow Module, Unlimited Pods'
-        : s.dspm === 'enterprise'
-        ? 'Advanced + Cloud/AI posture, Compliance scoring, Access Intelligence, Automation Policies'
-        : s.dspm === 'enterprise_plus'
-        ? 'Enterprise + Data/Cloud remediation, Access masking, full controls'
-        : 'No DSPM package selected';
+      let dspmText = 'No DSPM package selected';
+      if (s.dspm === 'advanced') dspmText = 'Discovery & classification: Data Command Center, Inventory Sync, Scanning, Classification, File Clustering, Insights Policies — <em>no posture automation or remediation (no ROT $ ROI)</em>';
+      if (s.dspm === 'enterprise') dspmText = 'Advanced + Cloud Asset & AI Model Discovery, Compliance Management & Risk Scoring, Access Intelligence, Automation Policies (ITSM/email)';
+      if (s.dspm === 'enterprise_plus') dspmText = 'Enterprise + Remediation on data/cloud/SaaS, Access masking & row filtering, closed-loop risk reduction (ROT ROI enabled)';
       dspmCard.innerHTML = `<div class="n">DSPM ${tier}</div><div>${dspmText}</div>`;
       mods.appendChild(dspmCard);
       CATALOG.forEach(m => {
@@ -469,100 +542,113 @@
         mods.appendChild(d);
       });
 
-      // Entitlement table with DSPM upgrade path
-      let tierNeed = 'Met';
-      let tierStatus = 'ok';
-      let tierReco = 'Full DSPM capability for this model';
+      // Entitlement table
+      let tierNeed, tierSt, tierLabelStatus, tierReco;
       if (s.dspm === 'none') {
-        tierNeed = 'Enterprise or Enterprise Plus';
-        tierStatus = 'miss';
-        tierReco = 'Your need: start with DSPM Enterprise (or Plus if remediation is required)';
+        tierNeed = 'Enterprise or Plus'; tierSt = 'miss'; tierLabelStatus = 'Missing';
+        tierReco = 'Start with Enterprise (posture/compliance) or Plus if remediation/ROT savings are a goal';
       } else if (s.dspm === 'advanced') {
-        tierNeed = 'DSPM Enterprise or Enterprise Plus';
-        tierStatus = 'up';
-        tierReco = 'You have Advanced — recommended need is Enterprise (posture & automation) or Plus (remediation)';
+        tierNeed = 'Enterprise or Enterprise Plus'; tierSt = 'up'; tierLabelStatus = 'Upgrade path';
+        tierReco = 'You have Advanced (discovery only). Need Enterprise for posture/automation or Plus for remediation & ROT storage ROI';
       } else if (s.dspm === 'enterprise') {
-        tierNeed = 'Enterprise Plus (optional)';
-        tierStatus = 'up';
-        tierReco = 'Optional upgrade to Plus for quarantine/labeling, cloud remediation, access masking';
+        tierNeed = 'Plus optional'; tierSt = 'up'; tierLabelStatus = 'Optional upgrade';
+        tierReco = 'Plus adds remediation actions for closed-loop risk reduction';
+      } else {
+        tierNeed = 'Met'; tierSt = 'ok'; tierLabelStatus = 'Covered';
+        tierReco = 'Full DSPM tier including remediation';
       }
 
       const rows = [
-        ['DSPM package', tier, tierNeed, tierStatus, tierStatus === 'ok' ? 'Covered' : tierStatus === 'up' ? 'Upgrade path' : 'Missing', tierReco],
-        ['Structured data (sizing)', s.structTB + ' TB', 'Visibility via DSPM / data intelligence scope', 'ok', 'Sized', 'Used for discovery & classification planning'],
-        ['Unstructured + ROT', s.unstructTB + ' TB · ' + (s.rotPct*100).toFixed(0) + '% ROT', rotTB.toFixed(1) + ' TB remediable', s.dspm !== 'none' ? 'ok' : 'miss', s.dspm !== 'none' ? 'DSPM enables ROT' : 'Need DSPM', 'Storage save on ' + CLOUD[s.cloud] + ': ' + fmt(annualStor) + '/yr'],
-        ['Workflow', (s.owned.workflow || s.dspm !== 'none') ? 'Included' : 'Not licensed', s.workflows + ' needed', (s.owned.workflow || s.dspm !== 'none') ? 'ok' : 'miss', (s.owned.workflow || s.dspm !== 'none') ? 'Covered' : 'Gap', 'Included with all DSPM packages'],
-        ['Assessments', s.owned.assessment ? 'Unlimited' : 'Not licensed', s.assessments + ' / yr', s.owned.assessment ? 'ok' : 'miss', s.owned.assessment ? 'Covered' : 'Need Assessment Automation', ''],
-        ['RoPA / Data Mapping', s.owned.datamapping ? 'Unlimited flows' : 'Not licensed', 'Continuous', s.owned.datamapping ? 'ok' : 'miss', s.owned.datamapping ? 'Covered' : 'Need Data Mapping', ''],
-        ['DSR Portal', s.owned.dsr_portal ? 'Yes' : 'No', fmtN(s.dsrsYear) + ' DSRs/yr', s.owned.dsr_portal ? 'ok' : 'miss', s.owned.dsr_portal ? 'Covered' : 'Need Portal', ''],
-        ['Robotic DSR', s.owned.robotic_dsr ? Math.ceil(s.dsrSystems/100) + ' unit(s)' : 'Not licensed', s.dsrSystems + ' systems', s.owned.robotic_dsr ? 'ok' : 'miss', s.owned.robotic_dsr ? 'Covered' : 'Need Robotic DSR', '1 unit = 1–100 systems'],
-        ['Vendor RM', s.owned.vendor ? 'Unlimited' : 'Not licensed', s.vendors + ' / yr', s.owned.vendor ? 'ok' : 'miss', s.owned.vendor ? 'Covered' : 'Need Vendor RM', ''],
-        ['Breach Mgmt', s.owned.breach ? '250 workflows/yr' : 'Not licensed', s.breaches + ' events est.', s.owned.breach ? 'ok' : 'miss', s.owned.breach ? 'Covered' : 'Need Breach', ''],
-        ['Cookie Consent', s.owned.cookie ? Math.ceil(s.cookieMAU/1e5) + ' × 100K' : 'Not licensed', fmtN(s.cookieMAU) + ' MAU', s.owned.cookie ? 'ok' : 'miss', s.owned.cookie ? 'Covered' : 'Need Cookie', ''],
-        ['Universal Consent', s.owned.univ_consent ? Math.ceil(s.univMAU/1e5) + ' × 100K' : 'Not licensed', fmtN(s.univMAU) + ' MAU', s.owned.univ_consent ? 'ok' : 'miss', s.owned.univ_consent ? 'Covered' : 'Need Universal', ''],
-        ['Mobile Consent', s.owned.mobile ? Math.ceil(s.mobileMAU/1e5) + ' × 100K' : 'Not licensed', fmtN(s.mobileMAU) + ' MAU', s.owned.mobile ? 'ok' : 'miss', s.owned.mobile ? 'Covered' : 'Need Mobile', ''],
-        ['Privacy Notice', s.owned.privacy_notice ? 'Licensed' : 'Not licensed', 'Notices under management', s.owned.privacy_notice ? 'ok' : 'miss', s.owned.privacy_notice ? 'Covered' : 'Need Notice Mgmt', ''],
+        ['DSPM package', tier, tierNeed, tierSt, tierLabelStatus, tierReco],
+        ['ROT storage ROI', rotUnlocked ? fmt(annualStor) + '/yr' : '$0 (not licensed for remediation)', rotPotentialTB.toFixed(1) + ' TB potential', rotUnlocked ? 'ok' : 'miss', rotUnlocked ? 'Unlocked' : 'Locked', rotUnlocked ? 'Enterprise/Plus remediation enables quarantine savings' : 'Upgrade to Enterprise or Plus to unlock'],
+        ['DSR opex ROI', dsrLicensed ? fmt(dsr3) + ' / 3YR' : '$0', fmtN(s.dsrsYear) + ' DSRs/yr', dsrLicensed ? 'ok' : 'miss', dsrLicensed ? 'Unlocked' : 'Locked', dsrLicensed ? 'Portal and/or Robotic licensed' : 'License DSR Portal or Robotic DSR'],
+        ['Assessments', s.owned.assessment ? 'Unlimited' : 'Not licensed', s.assessments + '/yr', s.owned.assessment ? 'ok' : 'miss', s.owned.assessment ? 'Covered' : 'Gap', ''],
+        ['RoPA / Mapping', s.owned.datamapping ? 'Unlimited' : 'Not licensed', 'Continuous', s.owned.datamapping ? 'ok' : 'miss', s.owned.datamapping ? 'Covered' : 'Gap', ''],
+        ['DSR Portal', s.owned.dsr_portal ? 'Yes' : 'No', fmtN(s.dsrsYear) + '/yr', s.owned.dsr_portal ? 'ok' : 'miss', s.owned.dsr_portal ? 'Covered' : 'Gap', ''],
+        ['Robotic DSR', s.owned.robotic_dsr ? Math.ceil(s.dsrSystems/100)+' unit(s)' : 'No', s.dsrSystems + ' systems', s.owned.robotic_dsr ? 'ok' : 'miss', s.owned.robotic_dsr ? 'Covered' : 'Gap', ''],
+        ['Vendor RM', s.owned.vendor ? 'Unlimited' : 'No', s.vendors + '/yr', s.owned.vendor ? 'ok' : 'miss', s.owned.vendor ? 'Covered' : 'Gap', ''],
+        ['Breach Mgmt', s.owned.breach ? '250 wf/yr' : 'No', s.breaches + ' events', s.owned.breach ? 'ok' : 'miss', s.owned.breach ? 'Covered' : 'Gap', ''],
+        ['Cookie Consent', s.owned.cookie ? Math.ceil(s.cookieMAU/1e5)+' × 100K' : 'No', fmtN(s.cookieMAU)+' MAU', s.owned.cookie ? 'ok' : 'miss', s.owned.cookie ? 'Covered' : 'Gap', ''],
+        ['Universal Consent', s.owned.univ_consent ? Math.ceil(s.univMAU/1e5)+' × 100K' : 'No', fmtN(s.univMAU)+' MAU', s.owned.univ_consent ? 'ok' : 'miss', s.owned.univ_consent ? 'Covered' : 'Gap', ''],
+        ['Mobile Consent', s.owned.mobile ? Math.ceil(s.mobileMAU/1e5)+' × 100K' : 'No', fmtN(s.mobileMAU)+' MAU', s.owned.mobile ? 'ok' : 'miss', s.owned.mobile ? 'Covered' : 'Gap', ''],
+        ['Privacy Notice', s.owned.privacy_notice ? 'Licensed' : 'GAP', 'Notices under management', s.owned.privacy_notice ? 'ok' : 'miss', s.owned.privacy_notice ? 'Covered' : 'Missing', 'Add for compliance transparency with Consent'],
       ];
 
       let ht = '<table class="need-table"><thead><tr><th>Capability</th><th>You have</th><th>Your need</th><th>Status</th></tr></thead><tbody>';
       rows.forEach(r => {
-        const cls = r[3] === 'ok' ? 'ok' : r[3] === 'up' ? 'up' : 'miss';
-        ht += `<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td class="${cls}">${r[4]}${r[5] ? `<div class="chip">${r[5]}</div>` : ''}</td></tr>`;
+        const cls = r[3]==='ok'?'ok':r[3]==='up'?'up':'miss';
+        ht += `<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td class="${cls}">${r[4]}${r[5]?`<div class="chip">${r[5]}</div>`:''}</td></tr>`;
       });
       ht += '</tbody></table>';
-      ht += `<div class="explain" style="margin-top:0.75rem"><strong>Investment narrative:</strong> Hard $ benefit is ${fmt(hardY)}/year and ${fmt(hard3)} over 3 years (ROT storage on ${CLOUD[s.cloud]} + DSR automation). Compare to your Securiti quote for net ROI and payback. ROT share of annual hard $: <strong>${hardY > 0 ? Math.round(annualStor/hardY*100) : 0}%</strong> · DSR share: <strong>${hardY > 0 ? Math.round((dsr3/3)/hardY*100) : 0}%</strong>.</div>`;
+      ht += `<div class="explain" style="margin-top:0.7rem"><strong>Licensed ROI only:</strong> Charts and KPIs count hard $ solely from modules you own.
+        ROT storage = ${rotUnlocked ? fmt(annualStor)+'/yr unlocked' : '<strong>$0</strong> until DSPM Enterprise/Plus'}.
+        DSR automation = ${dsrLicensed ? fmt(dsr3)+' over 3YR' : '<strong>$0</strong> until DSR Portal or Robotic'}.
+        <strong>Licensed 3YR hard $: ${fmt(hard3)}</strong>. Potential if you upgrade (ROT unlocked): +${fmt(rotPotentialTB * s.storageCost * 3)} over 3YR storage.
+        Use upsell list to align upgrades with compliance, cyber exposure reduction, and cloud cost objectives. Compare to Securiti quote for net ROI.</div>`;
       $('entitleTable').innerHTML = ht;
 
-      updateCharts(s, annualStor, dsr3, stor3, hard3, hardY, gaps.length);
-      updateExplains(s, rotTB, annualStor, dsr3, stor3, hard3, hardY, tier, gaps.length);
+      updateCharts(annualStor, dsr3, hard3, hardY, s, gaps.length, rotUnlocked, dsrLicensed, rotPotentialTB);
+      updateExplains(s, annualStor, dsr3, hard3, hardY, tier, rotUnlocked, dsrLicensed, rotPotentialTB, gaps.length);
     }
 
-    function updateCharts(s, annualStor, dsr3, stor3, hard3, hardY, gapCount) {
+    function updateCharts(annualStor, dsr3, hard3, hardY, s, gapCount, rotUnlocked, dsrLicensed, rotPotentialTB) {
       const ownedN = CATALOG.filter(m => s.owned[m.id]).length + (s.dspm !== 'none' ? 1 : 0);
       const destroy = id => { if (charts[id]) { charts[id].destroy(); charts[id] = null; } };
+      const lockedStor = !rotUnlocked ? (rotPotentialTB * s.storageCost) : 0;
 
       destroy('mix');
       charts.mix = new Chart($('chartMix'), {
         type: 'doughnut',
         data: {
-          labels: ['ROT storage (annual)', 'DSR automation (annual)'],
-          datasets: [{ data: [annualStor, dsr3/3], backgroundColor: ['#7AB800', '#0077C8'], borderWidth: 0 }]
+          labels: rotUnlocked || dsrLicensed
+            ? ['ROT storage (licensed)', 'DSR automation (licensed)', !rotUnlocked ? 'ROT potential (locked)' : null].filter(Boolean)
+            : ['No licensed hard $ yet', 'Upgrade to unlock'],
+          datasets: [{
+            data: (rotUnlocked || dsrLicensed)
+              ? [annualStor || 0.001, dsr3/3 || 0.001].concat(!rotUnlocked ? [lockedStor] : [])
+              : [1, 0.15],
+            backgroundColor: (rotUnlocked || dsrLicensed)
+              ? ['#7AB800', '#0077C8'].concat(!rotUnlocked ? ['#B0BEC5'] : [])
+              : ['#CFD8DC', '#FFE082'],
+            borderWidth: 0
+          }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Annual hard $ mix' } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Licensed annual hard $ mix' } } }
       });
 
       destroy('benefit');
       charts.benefit = new Chart($('chartBenefit'), {
         type: 'bar',
         data: {
-          labels: ['Storage / yr', 'DSR / yr', 'Hard $ / yr', '3YR total'],
-          datasets: [{ label: 'USD', data: [annualStor, dsr3/3, hardY, hard3], backgroundColor: ['#7AB800', '#00A3E0', '#0077C8', '#E87722'], borderRadius: 6 }]
+          labels: ['ROT / yr', 'DSR / yr', 'Hard $ / yr', '3YR licensed'],
+          datasets: [{ data: [annualStor, dsr3/3, hardY, hard3], backgroundColor: ['#7AB800','#00A3E0','#0077C8','#E87722'], borderRadius: 6 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Benefit summary' } }, scales: { y: { ticks: { callback: v => fmt(v) } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Licensed benefit only ($0 if not entitled)' } }, scales: { y: { ticks: { callback: v => fmt(v) } } } }
       });
 
       destroy('cloud');
+      const cloudVals = rotUnlocked ? [1,0.98,0.95,0.92].map(f => annualStor * f) : [0,0,0,0];
       charts.cloud = new Chart($('chartCloud'), {
         type: 'bar',
         data: {
-          labels: ['AWS', 'Azure', 'GCP', 'OCI'],
-          datasets: [{ label: 'Annual save', data: [1,0.98,0.95,0.92].map(f => annualStor * f), backgroundColor: ['#FF9900', '#0078D4', '#4285F4', '#F80000'], borderRadius: 6 }]
+          labels: ['AWS','Azure','GCP','OCI'],
+          datasets: [{ label: 'Licensed annual save', data: cloudVals, backgroundColor: ['#FF9900','#0078D4','#4285F4','#F80000'], borderRadius: 6 }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'ROT storage cost avoided by cloud (same volume)' } }, scales: { y: { ticks: { callback: v => fmt(v) } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: rotUnlocked ? 'ROT storage avoided by cloud' : 'ROT cloud savings locked (need Enterprise/Plus)' } }, scales: { y: { ticks: { callback: v => fmt(v) } } } }
       });
 
       destroy('year');
-      const y1 = hard3 / 3, y2 = hard3 / 3 * 1.1, y3 = hard3 - y1 - y2;
+      const y1 = hard3/3, y2 = hard3/3*1.08, y3 = hard3 - y1 - y2;
       charts.year = new Chart($('chartYear'), {
         type: 'line',
         data: {
-          labels: ['Year 1', 'Year 2', 'Year 3', 'Cumulative'],
+          labels: ['Year 1','Year 2','Year 3','Cumulative'],
           datasets: [
-            { label: 'Annual hard $', data: [y1, y2, y3, null], borderColor: '#0077C8', backgroundColor: 'rgba(0,119,200,0.12)', fill: true, tension: 0.3 },
+            { label: 'Licensed hard $', data: [y1,y2,y3,null], borderColor: '#0077C8', backgroundColor: 'rgba(0,119,200,0.1)', fill: true, tension: 0.3 },
             { label: 'Cumulative', data: [y1, y1+y2, hard3, hard3], borderColor: '#7AB800', backgroundColor: 'rgba(122,184,0,0.1)', fill: true, tension: 0.3 }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: '3-year value projection' } }, scales: { y: { ticks: { callback: v => fmt(v) } } } }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: '3-year licensed value projection' } }, scales: { y: { ticks: { callback: v => fmt(v) } } } }
       });
 
       destroy('cover');
@@ -572,28 +658,26 @@
           labels: ['Modules owned', 'Upsell gaps'],
           datasets: [{ data: [ownedN, gapCount], backgroundColor: ['#2E7D32', '#E87722'], borderRadius: 8 }]
         },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'License coverage vs recommended gaps' } } }
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: 'Coverage vs recommended upgrades' } } }
       });
     }
 
-    function updateExplains(s, rotTB, annualStor, dsr3, stor3, hard3, hardY, tier, gapCount) {
-      $('explain0').innerHTML = `<strong>Value overview — basis:</strong> Hard dollars from (1) ROT storage avoided on ${CLOUD[s.cloud]} and (2) DSR automation (~60% effort reduction). 
-        Unstructured ${s.unstructTB} TB × ${(s.rotPct*100).toFixed(0)}% ROT × ${(s.rotRemediate*100).toFixed(0)}% remediable = <strong>${rotTB.toFixed(1)} TB</strong> quarantined → <strong>${fmt(annualStor)}/yr</strong> storage. 
-        DSR contributes <strong>${fmt(dsr3/3)}/yr</strong>. Combined hard $ <strong>${fmt(hardY)}/yr</strong> and <strong>${fmt(hard3)} over 3 years</strong>. Compare to Securiti investment from your quote for ROI %.`;
+    function updateExplains(s, annualStor, dsr3, hard3, hardY, tier, rotUnlocked, dsrLicensed, rotPotentialTB, gapCount) {
+      const pot = rotPotentialTB * s.storageCost;
+      $('explain0').innerHTML = rotUnlocked || dsrLicensed
+        ? `<strong>Licensed value only.</strong> ROT ${rotUnlocked ? fmt(annualStor)+'/yr' : '<span style="color:#C62828">$0 — Advanced cannot claim remediation ROI</span>'}. DSR ${dsrLicensed ? fmt(dsr3/3)+'/yr' : '$0'}. Combined licensed hard $ <strong>${fmt(hardY)}/yr · ${fmt(hard3)} / 3YR</strong>. Grey/locked amounts appear only as upgrade potential.`
+        : `<strong>No licensed hard $ yet.</strong> Select Enterprise/Plus for ROT storage ROI and/or DSR Portal/Robotic for automation savings. Potential ROT if upgraded: <strong>${fmt(pot)}/yr</strong>.`;
 
-      $('explain1').innerHTML = `<strong>Storage by cloud — basis:</strong> Same ROT volume priced at your $/TB/year, shown per hyperscaler for executive comparison. 
-        Primary selection is <strong>${CLOUD[s.cloud]}</strong>. This answers: “How much do we stop paying cloud storage if Securiti finds and we remove ROT?”`;
+      $('explain1').className = 'explain' + (rotUnlocked ? '' : ' locked');
+      $('explain1').innerHTML = rotUnlocked
+        ? `<strong>Cloud storage savings</strong> use your $/TB/year on the same remediable ROT volume. Primary cloud: <strong>${CLOUD[s.cloud]}</strong>.`
+        : `<strong>ROT cloud ROI is locked.</strong> DSPM <em>${tier}</em> does not include remediation. Upgrade to <strong>Enterprise or Enterprise Plus</strong> to unlock ~${fmt(pot)}/yr potential on ${CLOUD[s.cloud]}. Advanced is discovery & classification only.`;
 
-      $('explain2').innerHTML = `<strong>3-year projection — basis:</strong> Cumulative hard $ from staying on the Securiti platform (ROT + DSR). 
-        Not a one-time project ROI — supports renewal and expansion narratives. Net ROI = this benefit minus license/PS cost from Securiti.`;
+      $('explain2').innerHTML = `<strong>3-year projection</strong> uses only licensed hard $. If you upgrade DSPM for ROT and add missing DSR licenses, cumulative value increases by the locked potential shown in Entitlement.`;
 
-      $('explain3').innerHTML = `<strong>Coverage vs gaps — basis:</strong> DSPM tier is <strong>${tier}</strong>. 
-        ${tier === 'Advanced' ? 'Your need is typically <strong>Enterprise or Enterprise Plus</strong> for posture, automation, or remediation. ' : ''}
-        ${tier === 'None' ? 'No DSPM selected — recommend <strong>Enterprise or Plus</strong>. ' : ''}
-        Orange bar = upsell items (${gapCount}) driven by your sizing (MAU, systems, assessments, etc.).`;
+      $('explain3').innerHTML = `<strong>Coverage:</strong> DSPM <em>${tier}</em>. ${tier==='Advanced' ? 'Recommended need: <strong>Enterprise or Plus</strong> for posture, compliance automation, and remediation/ROT ROI. ' : ''}Upsell items (${gapCount}) are mapped to compliance, cyber exposure, and efficiency — not generic feature lists.`;
     }
 
-    // Tabs
     document.querySelectorAll('.dtab').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.dtab').forEach(b => b.classList.remove('active'));
@@ -607,7 +691,7 @@
       $('company').value = 'Example Telecom Co.';
       $('industry').value = 'Telecommunications';
       $('cloud').value = 'aws';
-      document.querySelector('input[name=dspm][value=enterprise]').checked = true;
+      document.querySelector('input[name=dspm][value=advanced]').checked = true;
       $('structTB').value = 100; $('unstructTB').value = 100; $('rotPct').value = 28; $('rotRemediate').value = 70;
       $('storageCost').value = 3351; $('dsrSystems').value = 25; $('dsrsYear').value = 400; $('costDSR').value = 1524;
       $('cookieMAU').value = 1000000; $('univMAU').value = 200000; $('mobileMAU').value = 200000;
@@ -617,25 +701,24 @@
     }
 
     const knowledge = [
-      { keys: ['dspm', 'advanced', 'enterprise', 'plus', 'upgrade'], answer: 'Pick only one DSPM package. Advanced is core discovery. Enterprise adds cloud/AI posture, compliance scoring, access intelligence, automation. Plus adds remediation. If you are on Advanced, the table recommends Enterprise or Plus as your need.' },
-      { keys: ['roi', 'saving', 'storage', 'rot'], answer: 'ROT savings = Unstructured TB × % ROT × % remediable × $/TB/year. DSR savings assume ~60% automation on your annual volume over 3 years. Charts show the mix and 3-year projection for executives.' },
-      { keys: ['consent', 'cookie', 'mau'], answer: 'Consent products are sold in 100K Monthly Active Unique User slabs. Units needed = ceil(MAU / 100K).' },
-      { keys: ['how', 'use'], answer: 'Select one DSPM tier, check other modules you own, enter sizing. KPIs, charts, entitlement table and upsell list update live. Print for leadership packs.' }
+      { keys:['advanced','rot','remediation'], answer: 'DSPM Advanced is discovery and classification only. It does not unlock ROT storage ROI. Switch to Enterprise or Enterprise Plus to enable remediation-based cloud storage savings in the KPIs and charts.' },
+      { keys:['roi','license','own'], answer: 'Hard $ is counted only for modules you own: ROT needs Enterprise/Plus; DSR opex needs Portal or Robotic. Everything else is entitlement/upsell planning.' },
+      { keys:['upgrade','upsell','plus','enterprise'], answer: 'Upsell items include business drivers: compliance, cyber exposure, cloud cost, operational efficiency. Privacy Notice is recommended when missing for transparency with Consent.' },
+      { keys:['how','use'], answer: 'Pick one DSPM tier, check other licenses, enter sizing. Charts show licensed ROI only. Use Entitlement and Upsell to plan upgrades.' }
     ];
     function toggleChat() { $('chatPanel').classList.toggle('open'); }
-    function addMsg(t, w) { const d = document.createElement('div'); d.className = 'msg '+w; d.textContent = t; $('chatMessages').appendChild(d); $('chatMessages').scrollTop = 1e9; }
-    function sendChat() {
-      const q = $('chatInput').value.trim(); if (!q) return;
-      addMsg(q, 'user'); $('chatInput').value = '';
-      const low = q.toLowerCase();
-      let a = 'Ask about DSPM tiers, ROI basis, ROT storage, consent MAU, or how to use the form.';
-      for (const k of knowledge) if (k.keys.some(x => low.includes(x))) { a = k.answer; break; }
-      setTimeout(() => addMsg(a, 'bot'), 250);
+    function addMsg(t,w){ const d=document.createElement('div'); d.className='msg '+w; d.textContent=t; $('chatMessages').appendChild(d); $('chatMessages').scrollTop=1e9; }
+    function sendChat(){
+      const q=$('chatInput').value.trim(); if(!q)return;
+      addMsg(q,'user'); $('chatInput').value='';
+      const low=q.toLowerCase(); let a='Ask about Advanced vs ROT ROI, licensed benefits, or upgrade drivers.';
+      for (const k of knowledge) if (k.keys.some(x=>low.includes(x))) { a=k.answer; break; }
+      setTimeout(()=>addMsg(a,'bot'),250);
     }
 
     buildChecks();
     recalc();
-    addMsg('Select one DSPM package and your other modules. Executive charts and the Entitlement table show ROI basis and upgrade paths (e.g. Advanced → Enterprise / Plus).', 'bot');
+    addMsg('ROI is calculated only for licenses you own. DSPM Advanced = discovery/classification (no ROT $). Enterprise/Plus unlock storage remediation ROI. Upsell lists Privacy Notice and tier upgrades with business drivers.', 'bot');
   </script>
 </body>
 </html>
