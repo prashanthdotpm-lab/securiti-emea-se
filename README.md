@@ -1,43 +1,29 @@
-# Securiti.ai 3D Client Value & ROI Dashboard
+# Securiti.ai License Value & Upsell ROI Dashboard
 
-Executive-ready interactive web app with **3D visuals**, live ROI, package upsell and chatbot.
+Interactive 3D dashboard aligned to the **Securiti sample BOM**.
 
-## Features
+## What clients do
 
-- **3D value bars** (Three.js) — DSR / ROT / Insurance savings animate as inputs change
-- **3D KPI cards** — hover tilt / depth effect
-- **Particle depth background** — dark executive theme
-- Live ROI across Risk, Compliance, Efficiency, Cyber Insurance
-- DSPM package comparison (Advanced → Enterprise → Enterprise Plus)
-- **Automatic upsell** based on current package + data scale
-- Chatbot for ROI / package / risk questions
-- Print / PDF for board packs
-- Fully client-side — works on GitHub Pages
+1. Enter company + primary cloud (AWS / Azure / GCP / OCI)
+2. **Check every license they already have** (mirrors BOM products):
+   - Data Under Management (Structured / Unstructured)
+   - Workflow, Assessment, Data Mapping (RoPA)
+   - DSR Portal, Robotic DSR (1–100 systems)
+   - Vendor Risk, Breach Management
+   - Cookie / Universal / Mobile Consent (100K MAU slabs)
+   - Privacy Notice, DSPM Advanced / Enterprise / Plus
+3. Enter sizing: TB, % ROT, MAU, # systems, DSRs, assessments, vendors, workflows
+4. Instantly see:
+   - **What they get** (assessments, RoPA, workflows, DSR capacity, consent units, breach workflows)
+   - **Gaps / upsell** vs their need
+   - **ROT volume quarantined (TB)**
+   - **Storage cost savings** on AWS, Azure, GCP, OCI
+   - 3D bars + entitlement table
 
 ## Host on GitHub Pages
 
-1. Create a repo (e.g. `securiti-roi-dashboard`)
-2. Upload `index.html` + this `README.md`
-3. **Settings → Pages → Deploy from branch → main → / (root)**
-4. Share: `https://<username>.github.io/securiti-roi-dashboard/`
-
-## Client usage
-
-1. Open the link
-2. Edit yellow input fields
-3. Watch KPIs, 3D bars and charts update instantly
-4. Review upsell recommendation
-5. Ask the chat (bottom-right) or Print / PDF for leadership
-
-## Upsell logic
-
-| Current package | Recommendation |
-|-----------------|----------------|
-| None            | Start with **Enterprise** |
-| Advanced        | Upgrade to **Enterprise** or **Enterprise Plus** |
-| Enterprise      | Upgrade to **Enterprise Plus** |
-| Enterprise Plus | Expand into Privacy / AI Governance |
+Upload `index.html` + this README → Settings → Pages → main branch → root.
 
 ## Disclaimer
 
-Estimates depend on inputs. Validate with discovery data. For internal executive use and joint review with Securiti.ai.
+Illustrative model based on sample BOM packaging. Final commercial terms follow official Securiti quotes.
