@@ -1,101 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Securiti.ai EMEA Command Center</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #020617; color: white; margin: 0; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Securiti.ai | 3D Client Value & ROI Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --blue-dark: #0B1C2D; --blue-mid: #1A6B9A; --blue-accent: #3DB2FF;
+      --teal: #00C9A7; --orange: #FF8C42; --green: #2ECC71; --risk: #E74C3C;
+      --gold: #F1C40F; --bg: #070D16; --card: rgba(18, 32, 52, 0.85);
+      --card-border: rgba(61, 178, 255, 0.18); --text: #E8F1F8; --muted: #8BA3B8;
+      --input-bg: rgba(255, 248, 220, 0.95);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .content { position: relative; z-index: 1; }
+    header {
+      background: linear-gradient(135deg, rgba(11,28,45,0.95), rgba(26,107,154,0.9));
+      backdrop-filter: blur(12px); color: white; padding: 1rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;
+      position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--card-border);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    header h1 {
+      font-size: 1.2rem; font-weight: 700;
+      background: linear-gradient(90deg, #fff, var(--blue-accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    header p { font-size: 0.75rem; opacity: 0.85; color: #B8D4E8; }
+    .header-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .btn { border: none; border-radius: 10px; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--blue-accent), var(--teal)); color: #0B1C2D; box-shadow: 0 4px 16px rgba(61,178,255,0.35); }
+    .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.35); }
+    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 1rem; padding: 1rem; max-width: 1600px; margin: 0 auto; }
+    @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+    .sidebar {
+      background: var(--card); backdrop-filter: blur(16px); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 1rem; max-height: calc(100vh - 90px); overflow-y: auto;
+      position: sticky; top: 80px; box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    @media (max-width: 1100px) { .sidebar { position: static; max-height: none; } }
+    .sidebar h2 { font-size: 0.9rem; color: var(--blue-accent); margin-bottom: 0.7rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--card-border); }
+    .form-section { margin-bottom: 1.1rem; }
+    .form-section h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.45rem; }
+    label { display: block; font-size: 0.74rem; font-weight: 600; margin-bottom: 0.15rem; color: #C5D8E8; }
+    input, select {
+      width: 100%; padding: 0.42rem 0.55rem; border: 1px solid rgba(241,196,15,0.35); border-radius: 8px;
+      font-size: 0.82rem; background: var(--input-bg); color: #1a56db; font-weight: 600; margin-bottom: 0.5rem;
+    }
+    input:focus, select:focus { outline: 2px solid var(--blue-accent); border-color: var(--blue-accent); }
+    .hint { font-size: 0.68rem; color: var(--muted); margin-top: -0.35rem; margin-bottom: 0.45rem; }
+    .main { display: flex; flex-direction: column; gap: 1rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 0.85rem; perspective: 1200px; }
+    .kpi {
+      background: var(--card); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 14px;
+      padding: 1rem; transform-style: preserve-3d; transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), box-shadow 0.35s;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.07); position: relative; overflow: hidden;
+    }
+    .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0; }
+    .kpi.risk::before { background: linear-gradient(90deg, var(--risk), #FF6B6B); }
+    .kpi.compliance::before { background: linear-gradient(90deg, var(--teal), #48DBB4); }
+    .kpi.efficiency::before { background: linear-gradient(90deg, var(--blue-accent), #5BC0FF); }
+    .kpi.insurance::before { background: linear-gradient(90deg, var(--green), #58D68D); }
+    .kpi.total::before { background: linear-gradient(90deg, var(--orange), var(--gold)); }
+    .kpi:hover { transform: translateY(-8px) rotateX(6deg) scale(1.02); box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 24px rgba(61,178,255,0.15); }
+    .kpi .label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+    .kpi .value {
+      font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;
+      background: linear-gradient(135deg, #fff, var(--blue-accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .kpi.total .value {
+      background: linear-gradient(135deg, var(--gold), var(--orange));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .kpi .sub { font-size: 0.68rem; color: var(--muted); margin-top: 0.2rem; }
+    .card {
+      background: var(--card); backdrop-filter: blur(14px); border: 1px solid var(--card-border);
+      border-radius: 16px; padding: 1.1rem; box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+    }
+    .card h3 { font-size: 0.9rem; color: var(--blue-accent); margin-bottom: 0.7rem; font-weight: 700; }
+    .charts { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1rem; }
+    @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
+    .chart-wrap { position: relative; height: 260px; }
+    #three-container {
+      width: 100%; height: 280px; border-radius: 12px; overflow: hidden;
+      background: radial-gradient(ellipse at center, #122034 0%, #070D16 70%);
+    }
+    .upsell {
+      background: linear-gradient(135deg, rgba(241,196,15,0.12), rgba(255,140,66,0.15));
+      border: 1px solid rgba(241,196,15,0.4); border-radius: 16px; padding: 1.1rem 1.3rem;
+      display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;
+      box-shadow: 0 8px 24px rgba(241,196,15,0.1); transform: perspective(800px) rotateX(1deg);
+    }
+    .upsell .icon { font-size: 2rem; filter: drop-shadow(0 4px 8px rgba(241,196,15,0.4)); }
+    .upsell h4 { color: var(--gold); font-size: 0.95rem; margin-bottom: 0.3rem; }
+    .upsell p { font-size: 0.82rem; color: #E8D5A3; }
+    .upsell ul { margin: 0.4rem 0 0 1.1rem; font-size: 0.8rem; color: #D4C48A; }
+    .package-badge { display: inline-block; padding: 0.18rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; margin-right: 0.25rem; }
+    .pkg-adv { background: rgba(61,178,255,0.25); color: var(--blue-accent); }
+    .pkg-ent { background: rgba(46,204,113,0.25); color: var(--green); }
+    .pkg-plus { background: rgba(231,76,60,0.25); color: #FF8A80; }
+    .pkg-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    .pkg-table th, .pkg-table td { padding: 0.4rem 0.55rem; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+    .pkg-table th { background: rgba(26,107,154,0.5); color: white; font-weight: 600; }
+    .pkg-table tr:hover { background: rgba(61,178,255,0.06); }
+    .check { color: var(--green); font-weight: 700; }
+    .cross { color: #3A4A5C; }
+    .chat-toggle {
+      position: fixed; bottom: 1.25rem; right: 1.25rem; width: 58px; height: 58px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: white; border: none;
+      font-size: 1.5rem; cursor: pointer; box-shadow: 0 6px 24px rgba(61,178,255,0.45); z-index: 200; transition: transform 0.25s;
+    }
+    .chat-toggle:hover { transform: scale(1.08); }
+    .chat-panel {
+      position: fixed; bottom: 5.6rem; right: 1.25rem; width: 360px; max-width: calc(100vw - 2rem); height: 440px;
+      background: rgba(12, 24, 40, 0.96); backdrop-filter: blur(20px); border: 1px solid var(--card-border);
+      border-radius: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 200; overflow: hidden;
+    }
+    .chat-panel.open { display: flex; }
+    .chat-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid)); color: white; padding: 0.85rem 1rem; font-weight: 600; font-size: 0.88rem; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.55rem; background: rgba(7,13,22,0.5); }
+    .msg { max-width: 88%; padding: 0.55rem 0.75rem; border-radius: 12px; font-size: 0.8rem; line-height: 1.4; }
+    .msg.bot { background: rgba(26,107,154,0.25); border: 1px solid var(--card-border); align-self: flex-start; color: #D0E4F5; }
+    .msg.user { background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: white; align-self: flex-end; }
+    .chat-input-row { display: flex; gap: 0.4rem; padding: 0.65rem; border-top: 1px solid var(--card-border); }
+    .chat-input-row input { flex: 1; margin: 0; background: rgba(255,255,255,0.08); color: var(--text); border-color: var(--card-border); }
+    .chat-input-row button { background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: white; border: none; border-radius: 8px; padding: 0 0.9rem; font-weight: 600; cursor: pointer; }
+    .quick-q { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.25rem; }
+    .quick-q button { font-size: 0.68rem; padding: 0.22rem 0.45rem; border-radius: 999px; border: 1px solid var(--card-border); background: rgba(61,178,255,0.1); color: var(--blue-accent); cursor: pointer; }
+    footer { text-align: center; padding: 1.2rem; font-size: 0.72rem; color: var(--muted); }
+    .projection-note { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(61,178,255,0.08); border-radius: 8px; border: 1px solid var(--card-border); }
+    .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.82rem; color: #B8D0E4; }
+    .detail-grid strong { color: var(--blue-accent); display: block; margin-bottom: 0.25rem; }
+    @media print {
+      #bg-canvas, .chat-toggle, .chat-panel, .sidebar { display: none !important; }
+      .layout { grid-template-columns: 1fr; } body { background: white; color: black; }
+      .kpi, .card { box-shadow: none; border: 1px solid #ccc; background: white; color: black; }
+    }
+  </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+  <canvas id="bg-canvas"></canvas>
+  <div class="content">
+    <header>
+      <div>
+        <h1>Securiti.ai  ·  3D Client Value & ROI Dashboard</h1>
+        <p>Interactive executive model · Live updates · Package upsell · Share with Securiti</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="resetDefaults()">Reset defaults</button>
+        <button class="btn btn-primary" onclick="window.print()">Print / PDF</button>
+      </div>
+    </header>
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>Your Inputs</h2>
+        <p class="hint">Yellow fields drive the 3D dashboard. Results update as you type.</p>
+        <div class="form-section">
+          <h3>Customer profile</h3>
+          <label>Company name</label><input id="company" value="Example Telecom Co." oninput="recalc()" />
+          <label>Industry</label><input id="industry" value="Telecommunications" oninput="recalc()" />
+          <label>Region</label>
+          <select id="region" onchange="recalc()"><option>EMEA</option><option>Americas</option><option>APAC</option></select>
+        </div>
+        <div class="form-section">
+          <h3>Global assumptions</h3>
+          <label>Annual revenue ($)</label><input id="revenue" type="number" value="5000000000" oninput="recalc()" />
+          <label>Market cap ($)</label><input id="marketCap" type="number" value="5000000000" oninput="recalc()" />
+          <label>Total data protected (TB)</label><input id="dataTB" type="number" value="100" step="0.1" oninput="recalc()" />
+          <label>US data subjects</label><input id="usSubjects" type="number" value="1000000" oninput="recalc()" />
+          <label>DSRs per year</label><input id="dsrs" type="number" value="100" oninput="recalc()" />
+        </div>
+        <div class="form-section">
+          <h3>Risk inputs</h3>
+          <label>% data containing PII</label><input id="pctPII" type="number" value="13" step="0.1" oninput="recalc()" />
+          <label># files containing PII</label><input id="piiFiles" type="number" value="29954" oninput="recalc()" />
+          <label>Breach cost per PII file ($)</label><input id="costPerFile" type="number" value="183" oninput="recalc()" />
+          <label>Market cap drop on breach (%)</label><input id="mcapDrop" type="number" value="7.5" step="0.1" oninput="recalc()" />
+        </div>
+        <div class="form-section">
+          <h3>Compliance inputs</h3>
+          <label>% US pop. in privacy-law states</label><input id="pctUSPrivacy" type="number" value="40" oninput="recalc()" />
+          <label>US penalty per data subject ($)</label><input id="usPenalty" type="number" value="0.39" step="0.01" oninput="recalc()" />
+          <label>EU AI Act penalty – capped ($)</label><input id="aiActCap" type="number" value="7500000" oninput="recalc()" />
+          <label>GDPR penalty – capped ($)</label><input id="gdprCap" type="number" value="10000000" oninput="recalc()" />
+        </div>
+        <div class="form-section">
+          <h3>Efficiency inputs</h3>
+          <label>Annual DSR growth rate (%)</label><input id="dsrGrowth" type="number" value="72" oninput="recalc()" />
+          <label>Cost per DSR ($)</label><input id="costDSR" type="number" value="1524" oninput="recalc()" />
+          <label>% time reduced via automation</label><input id="dsrReduce" type="number" value="60" oninput="recalc()" />
+          <label>ROT % of total data</label><input id="rotPct" type="number" value="28" oninput="recalc()" />
+          <label>Storage cost $/TB / year</label><input id="storageCost" type="number" value="3351" oninput="recalc()" />
+        </div>
+        <div class="form-section">
+          <h3>Cyber insurance</h3>
+          <label>Premium per $1M revenue ($)</label><input id="insPerM" type="number" value="1589" oninput="recalc()" />
+          <label>% reduction via discovery</label><input id="insReduce" type="number" value="5" oninput="recalc()" />
+        </div>
+        <div class="form-section">
+          <h3>Current DSPM package</h3>
+          <label>Your package</label>
+          <select id="dspmPackage" onchange="recalc()">
+            <option value="none">None / Evaluating</option>
+            <option value="advanced" selected>DSPM Advanced</option>
+            <option value="enterprise">DSPM Enterprise</option>
+            <option value="enterprise_plus">DSPM Enterprise Plus</option>
+          </select>
+          <div class="hint">Upsell banner updates automatically</div>
+        </div>
+      </aside>
+      <main class="main">
+        <div class="kpi-grid">
+          <div class="kpi risk"><div class="label">Sensitive Data Risk</div><div class="value" id="kpiSensRisk">—</div><div class="sub">PII exposure cost</div></div>
+          <div class="kpi risk"><div class="label">Market Cap Risk</div><div class="value" id="kpiMcapRisk">—</div><div class="sub">Potential value impact</div></div>
+          <div class="kpi compliance"><div class="label">Compliance Risk (US+EU)</div><div class="value" id="kpiCompRisk">—</div><div class="sub">Regulatory exposure</div></div>
+          <div class="kpi efficiency"><div class="label">3YR Efficiency Benefit</div><div class="value" id="kpiEff">—</div><div class="sub">DSR + ROT savings</div></div>
+          <div class="kpi insurance"><div class="label">3YR Cyber Ins. Savings</div><div class="value" id="kpiIns">—</div><div class="sub">Premium reduction</div></div>
+          <div class="kpi total"><div class="label">Hard $ 3YR Benefit</div><div class="value" id="kpiTotal">—</div><div class="sub">Efficiency + Insurance</div></div>
+        </div>
+        <div class="upsell" id="upsellBox">
+          <div class="icon">🚀</div>
+          <div style="flex:1"><h4 id="upsellTitle">Package recommendation</h4><p id="upsellBody"></p><ul id="upsellList"></ul></div>
+        </div>
+        <div class="charts">
+          <div class="card">
+            <h3>3D Value Mix — Hard $ Benefits</h3>
+            <div id="three-container"></div>
+            <div class="projection-note" id="projectionNote"></div>
+          </div>
+          <div class="card">
+            <h3>3-Year Value Projection</h3>
+            <div class="chart-wrap"><canvas id="chartProjection"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>DSPM Package Comparison</h3>
+          <div style="overflow-x:auto">
+            <table class="pkg-table">
+              <thead><tr><th>Capability</th><th>Advanced</th><th>Enterprise</th><th>Enterprise Plus</th></tr></thead>
+              <tbody>
+                <tr><td>Data Command Center</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Data Inventory Sync</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Data Scanning and Classification</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>File Clustering Analysis</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Insights Policies</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Cloud Asset Discovery & Posture</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>AI Model Discovery & Posture</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>VM Package Discovery</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Compliance Mgmt & Data Risk Scoring</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Access Intelligence</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Automation Policies (ITSM / email)</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Remediation on Data</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td>Remediation on Cloud / SaaS</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td>Access Remediation (Masking, Filtering)</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td>Workflow Module</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td>Unlimited Customer Hosted Pods</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Detailed breakdown</h3>
+          <div class="detail-grid">
+            <div><strong>Risk</strong><div>Sensitive Data Risk: <span id="dSens"></span></div><div>Market Cap Risk: <span id="dMcap"></span></div></div>
+            <div><strong>Compliance</strong><div>US Opt #1: <span id="dUS1"></span></div><div>US Opt #2: <span id="dUS2"></span></div><div>EU (GDPR+AI Act): <span id="dEU"></span></div></div>
+            <div><strong>Efficiency (3YR)</strong><div>DSR Opex reduction: <span id="dDSR"></span></div><div>ROT storage savings: <span id="dROT"></span></div></div>
+            <div><strong>Cyber insurance</strong><div>Annual savings: <span id="dInsY"></span></div><div>3YR savings: <span id="dIns3"></span></div></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <footer>Securiti.ai 3D Client Value Model · Internal executive use & joint review with Securiti · Validate with discovery data</footer>
+  </div>
+  <button class="chat-toggle" onclick="toggleChat()" title="Ask a question">💬</button>
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header">Securiti Value Assistant</div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-row">
+      <input id="chatInput" placeholder="Ask about ROI, packages, risk…" onkeydown="if(event.key==='Enter')sendChat()" />
+      <button onclick="sendChat()">Send</button>
+    </div>
+  </div>
+  <script>
+    const $ = id => document.getElementById(id);
+    const num = id => parseFloat($(id).value) || 0;
+    const fmt = n => {
+      if (Math.abs(n) >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
+      if (Math.abs(n) >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
+      if (Math.abs(n) >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
+      return '$' + Math.round(n).toLocaleString();
+    };
+    const fmtFull = n => '$' + Math.round(n).toLocaleString();
+    let chartProj, threeScene, threeCamera, threeRenderer, threeBars = [];
 
-        const Icon = ({ name }) => {
-            useEffect(() => { lucide.createIcons(); }, []);
-            return <i data-lucide={name} className="w-5 h-5"></i>;
-        };
+    (function initBg() {
+      const canvas = $('bg-canvas');
+      const ctx = canvas.getContext('2d');
+      let w, h, particles = [];
+      function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+      function spawn() {
+        particles = [];
+        for (let i = 0; i < 60; i++) particles.push({ x: Math.random()*w, y: Math.random()*h, z: Math.random()*2+0.3, vx: (Math.random()-0.5)*0.15, vy: (Math.random()-0.5)*0.15 });
+      }
+      function draw() {
+        ctx.clearRect(0,0,w,h);
+        const g = ctx.createRadialGradient(w*0.7, h*0.2, 0, w*0.5, h*0.5, w*0.7);
+        g.addColorStop(0, 'rgba(26,107,154,0.12)'); g.addColorStop(1, 'rgba(7,13,22,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+        particles.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1; if (p.y < 0 || p.y > h) p.vy *= -1;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.z*1.8, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(61,178,255,' + (0.15 + p.z*0.12) + ')'; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      resize(); spawn(); draw();
+      window.addEventListener('resize', () => { resize(); spawn(); });
+    })();
 
-        const App = () => {
-            const [page, setPage] = useState('Dashboard');
+    function initThree() {
+      const container = $('three-container');
+      const width = container.clientWidth, height = container.clientHeight;
+      threeScene = new THREE.Scene();
+      threeCamera = new THREE.PerspectiveCamera(42, width/height, 0.1, 100);
+      threeCamera.position.set(4.5, 4.2, 7.5);
+      threeCamera.lookAt(0, 1.2, 0);
+      threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      threeRenderer.setSize(width, height);
+      threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.innerHTML = '';
+      container.appendChild(threeRenderer.domElement);
+      threeScene.add(new THREE.AmbientLight(0x88aacc, 0.55));
+      const dir = new THREE.DirectionalLight(0xffffff, 0.85); dir.position.set(5,10,7); threeScene.add(dir);
+      const point = new THREE.PointLight(0x3DB2FF, 0.6, 20); point.position.set(-3,5,3); threeScene.add(point);
+      const grid = new THREE.GridHelper(10, 10, 0x1A6B9A, 0x122034); threeScene.add(grid);
+      const colors = [0x2E86AB, 0x00C9A7, 0x2ECC71];
+      threeBars = [];
+      for (let i = 0; i < 3; i++) {
+        const geo = new THREE.BoxGeometry(1.2, 1, 1.2);
+        const mat = new THREE.MeshStandardMaterial({ color: colors[i], metalness: 0.35, roughness: 0.4, emissive: colors[i], emissiveIntensity: 0.15 });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set((i-1)*2.2, 0.5, 0);
+        threeScene.add(mesh); threeBars.push(mesh);
+        const ringGeo = new THREE.RingGeometry(0.7, 0.95, 32);
+        const ringMat = new THREE.MeshBasicMaterial({ color: colors[i], transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = -Math.PI/2; ring.position.set((i-1)*2.2, 0.02, 0);
+        threeScene.add(ring);
+      }
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.008;
+        threeCamera.position.x = 4.5 * Math.cos(t * 0.35);
+        threeCamera.position.z = 7.5 * Math.sin(t * 0.35) + 2;
+        threeCamera.position.y = 4.2 + Math.sin(t * 0.5) * 0.3;
+        threeCamera.lookAt(0, 1.5, 0);
+        threeBars.forEach((b,i) => { b.rotation.y = Math.sin(t+i)*0.08; });
+        threeRenderer.render(threeScene, threeCamera);
+      }
+      animate();
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth, h = container.clientHeight;
+        threeCamera.aspect = w/h; threeCamera.updateProjectionMatrix(); threeRenderer.setSize(w,h);
+      });
+    }
 
-            return (
-                <div className="flex h-screen overflow-hidden">
-                    {/* Sidebar */}
-                    <div className="w-64 glass border-r border-white/10 p-6 flex flex-col">
-                        <div className="flex items-center gap-3 mb-10">
-                            <div className="w-8 h-8 bg-cyan-500 rounded flex items-center justify-center">
-                                <Icon name="shield" />
-                            </div>
-                            <span className="font-black tracking-tighter text-lg">SECURITI.AI</span>
-                        </div>
-                        
-                        <nav className="flex-1 space-y-2">
-                            {['Dashboard', 'Lead Qualification', 'ROI Studio'].map(item => (
-                                <button 
-                                    key={item}
-                                    onClick={() => setPage(item)}
-                                    className={`w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 transition-all ${page === item ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-400/30' : 'text-slate-400 hover:bg-white/5'}`}
-                                >
-                                    <Icon name={item === 'Dashboard' ? 'layout' : item === 'ROI Studio' ? 'database' : 'user-plus'} />
-                                    <span className="text-sm font-bold uppercase tracking-wider">{item}</span>
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
+    function updateThreeBars(dsr, rot, ins) {
+      if (!threeBars.length) return;
+      const max = Math.max(dsr, rot, ins, 1);
+      const heights = [dsr/max*3.5+0.4, rot/max*3.5+0.4, ins/max*3.5+0.4];
+      threeBars.forEach((bar, i) => {
+        const targetH = heights[i];
+        const current = bar.scale.y || 1;
+        bar.scale.y = current + (targetH - current) * 0.2;
+        bar.position.y = bar.scale.y / 2;
+      });
+      if (Math.abs(threeBars[0].scale.y - heights[0]) > 0.03)
+        requestAnimationFrame(() => updateThreeBars(dsr, rot, ins));
+    }
 
-                    {/* Main Content */}
-                    <main className="flex-1 p-10 overflow-y-auto">
-                        <header className="mb-10">
-                            <h1 className="text-4xl font-black uppercase italic tracking-tight">{page}</h1>
-                            <p className="text-slate-500 font-bold tracking-widest mt-1">EMEA SALES ENGINEERING COMMAND</p>
-                        </header>
+    function recalc() {
+      const revenue = num('revenue'), marketCap = num('marketCap'), dataTB = num('dataTB');
+      const usSubjects = num('usSubjects'), dsrs = num('dsrs');
+      const piiFiles = num('piiFiles'), costPerFile = num('costPerFile'), mcapDrop = num('mcapDrop')/100;
+      const pctUSPrivacy = num('pctUSPrivacy')/100, usPenalty = num('usPenalty');
+      const aiActCap = num('aiActCap'), gdprCap = num('gdprCap');
+      const dsrGrowth = num('dsrGrowth')/100, costDSR = num('costDSR'), dsrReduce = num('dsrReduce')/100;
+      const rotPct = num('rotPct')/100, storageCost = num('storageCost');
+      const insPerM = num('insPerM'), insReduce = num('insReduce')/100;
+      const pkg = $('dspmPackage').value;
 
-                        {page === 'Dashboard' && (
-                            <div className="grid grid-cols-3 gap-6">
-                                <div className="glass p-8 rounded-3xl border-t-4 border-cyan-500">
-                                    <p className="text-slate-500 text-xs font-black uppercase mb-2">Active Pipeline</p>
-                                    <p className="text-4xl font-black">€14.2M</p>
-                                </div>
-                                <div className="glass p-8 rounded-3xl border-t-4 border-purple-500">
-                                    <p className="text-slate-500 text-xs font-black uppercase mb-2">Technical Win Rate</p>
-                                    <p className="text-4xl font-black">84%</p>
-                                </div>
-                                <div className="glass p-8 rounded-3xl border-t-4 border-emerald-500">
-                                    <p className="text-slate-500 text-xs font-black uppercase mb-2">Open PoCs</p>
-                                    <p className="text-4xl font-black">32</p>
-                                </div>
-                            </div>
-                        )}
+      const sensRisk = piiFiles * costPerFile;
+      const mcapRisk = marketCap * mcapDrop;
+      const usOpt1 = usSubjects * pctUSPrivacy * usPenalty;
+      const usOpt2 = revenue * 0.0002;
+      const euRisk = aiActCap + gdprCap;
+      const compRisk = usOpt1 + euRisk;
+      const dsr3yr = dsrs * (1 + (1+dsrGrowth) + Math.pow(1+dsrGrowth,2));
+      const dsrSave3 = dsr3yr * costDSR * dsrReduce;
+      const rotSave3 = dataTB * rotPct * storageCost * 3;
+      const eff3 = dsrSave3 + rotSave3;
+      const insSaveY = (revenue/1e6) * insPerM * insReduce;
+      const insSave3 = insSaveY * 3;
+      const hard3 = eff3 + insSave3;
 
-                        {page === 'Lead Qualification' && (
-                            <div className="max-w-xl glass p-10 rounded-3xl">
-                                <p className="mb-6 text-slate-400">Fill in the discovery details to qualify the opportunity.</p>
-                                <input className="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4" placeholder="Customer Name" />
-                                <select className="w-full bg-white/5 border border-white/10 p-4 rounded-xl mb-4 text-slate-400">
-                                    <option>EMEA North</option>
-                                    <option>EMEA Central</option>
-                                    <option>EMEA South</option>
-                                </select>
-                                <button className="w-full bg-cyan-500 text-[#020617] font-black py-4 rounded-xl uppercase tracking-widest">Submit to Team</button>
-                            </div>
-                        )}
-                    </main>
-                </div>
-            );
-        };
+      $('kpiSensRisk').textContent = fmt(sensRisk);
+      $('kpiMcapRisk').textContent = fmt(mcapRisk);
+      $('kpiCompRisk').textContent = fmt(compRisk);
+      $('kpiEff').textContent = fmt(eff3);
+      $('kpiIns').textContent = fmt(insSave3);
+      $('kpiTotal').textContent = fmt(hard3);
+      $('dSens').textContent = fmtFull(sensRisk); $('dMcap').textContent = fmtFull(mcapRisk);
+      $('dUS1').textContent = fmtFull(usOpt1); $('dUS2').textContent = fmtFull(usOpt2); $('dEU').textContent = fmtFull(euRisk);
+      $('dDSR').textContent = fmtFull(dsrSave3); $('dROT').textContent = fmtFull(rotSave3);
+      $('dInsY').textContent = fmtFull(insSaveY); $('dIns3').textContent = fmtFull(insSave3);
+      $('projectionNote').textContent = '3D bars: DSR '+fmt(dsrSave3)+' · ROT '+fmt(rotSave3)+' · Insurance '+fmt(insSave3)+' · Total hard $ over 3 years: '+fmt(hard3)+' for '+$('company').value;
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+      updateThreeBars(dsrSave3, rotSave3, insSave3);
+      updateProjChart(hard3);
+      updateUpsell(pkg, dataTB, dsrs, sensRisk);
+    }
+
+    function updateProjChart(total) {
+      const y1 = total/3, y2 = total/3*1.12, y3 = total - y1 - y2;
+      if (chartProj) chartProj.destroy();
+      Chart.defaults.color = '#8BA3B8'; Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+      chartProj = new Chart($('chartProjection'), {
+        type: 'bar',
+        data: {
+          labels: ['Year 1','Year 2','Year 3','3YR Total'],
+          datasets: [{ label: 'Hard $ Benefit', data: [y1,y2,y3,total],
+            backgroundColor: ['rgba(46,134,171,0.85)','rgba(0,201,167,0.85)','rgba(46,204,113,0.85)','rgba(255,140,66,0.9)'],
+            borderRadius: 8, borderSkipped: false }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }
+        }
+      });
+    }
+
+    function updateUpsell(pkg, dataTB, dsrs, sensRisk) {
+      const title = $('upsellTitle'), body = $('upsellBody'), list = $('upsellList');
+      list.innerHTML = '';
+      const add = t => { const li = document.createElement('li'); li.textContent = t; list.appendChild(li); };
+      if (pkg === 'none') {
+        title.textContent = 'Recommended: Start with DSPM Enterprise';
+        body.innerHTML = 'Evaluating Securiti? Start with <span class="package-badge pkg-ent">Enterprise</span> for posture, compliance scoring and automation.';
+        ['Cloud Asset & AI Model Discovery','Compliance Management & Risk Scoring','Access Intelligence','Automation Policies'].forEach(add);
+      } else if (pkg === 'advanced') {
+        title.textContent = 'Upsell: Advanced → Enterprise or Enterprise Plus';
+        body.innerHTML = 'On <span class="package-badge pkg-adv">Advanced</span>. Move to <span class="package-badge pkg-ent">Enterprise</span> for posture & automation, or <span class="package-badge pkg-plus">Enterprise Plus</span> for full remediation and unlimited pods.';
+        ['Enterprise: Cloud/AI Discovery, Compliance, Access Intelligence, Automation','Plus: Remediation, Access Controls, Workflow, Unlimited Pods'].forEach(add);
+        if (dataTB >= 50) add('Your data scale benefits from Enterprise+ posture & remediation');
+        if (dsrs >= 50) add('DSR volume pairs well with Workflow & Automation Policies');
+      } else if (pkg === 'enterprise') {
+        title.textContent = 'Upsell: Enterprise → Enterprise Plus';
+        body.innerHTML = 'On <span class="package-badge pkg-ent">Enterprise</span>. <span class="package-badge pkg-plus">Enterprise Plus</span> adds active remediation, access controls, Workflow and unlimited hosted pods.';
+        ['Remediation on Data & Cloud/SaaS','Access Masking & Row Filtering','Workflow Module','Unlimited Customer Hosted Pods'].forEach(add);
+      } else {
+        title.textContent = 'Enterprise Plus — full DSPM capability';
+        body.innerHTML = 'You have <span class="package-badge pkg-plus">Enterprise Plus</span>. Expand into Privacy Automation, AI Governance or broader data coverage for incremental ROI.';
+        add('Consider multi-year expansion and adjacent modules');
+      }
+    }
+
+    function resetDefaults() {
+      const d = { company:'Example Telecom Co.', industry:'Telecommunications', region:'EMEA', revenue:5000000000, marketCap:5000000000, dataTB:100, usSubjects:1000000, dsrs:100, pctPII:13, piiFiles:29954, costPerFile:183, mcapDrop:7.5, pctUSPrivacy:40, usPenalty:0.39, aiActCap:7500000, gdprCap:10000000, dsrGrowth:72, costDSR:1524, dsrReduce:60, rotPct:28, storageCost:3351, insPerM:1589, insReduce:5, dspmPackage:'advanced' };
+      Object.keys(d).forEach(k => { if ($(k)) $(k).value = d[k]; });
+      recalc();
+    }
+
+    const chatKnowledge = [
+      { keys:['roi','return','payback','savings','benefit'], answer:'Hard $ benefits come from DSR automation, ROT storage reduction and cyber insurance savings. Risk and compliance show exposure Securiti helps reduce. Edit yellow inputs — the 3D bars and charts update live.' },
+      { keys:['advanced','enterprise','plus','package','upgrade','upsell','dspm'], answer:'DSPM: Advanced (inventory, scan, classify) → Enterprise (posture, AI discovery, compliance, automation) → Enterprise Plus (remediation, access controls, Workflow, unlimited pods). The package dropdown drives the upsell banner.' },
+      { keys:['risk','breach','pii','sensitive','market cap'], answer:'Sensitive Data Risk = PII files × cost per file. Market Cap Risk = Market Cap × % drop after breach (default 7.5%). Securiti improves visibility and controls to reduce likelihood and impact.' },
+      { keys:['compliance','gdpr','cpra','privacy','ai act'], answer:'US risk can be per-subject or % of revenue. EU risk combines capped GDPR and AI Act scenarios. Securiti maps data to frameworks and supports audit evidence.' },
+      { keys:['dsr','request','automation'], answer:'DSR savings use volume, growth, cost per request and % effort removed by automation (default 60%), compounded over 3 years.' },
+      { keys:['rot','storage'], answer:'ROT is typically ~28% of data. Savings = ROT TB × $/TB/year × 3. Securiti helps identify and remediate safely.' },
+      { keys:['insurance','cyber','premium'], answer:'Premium ≈ (Revenue/$1M) × rate per $1M. A modest % reduction from better discovery/controls drives the 3-year insurance savings.' },
+      { keys:['3d','chart','bar','visual'], answer:'The 3D bars show relative hard $ value from DSR, ROT and Insurance. They animate as you change inputs. Hover KPI cards for a 3D tilt effect.' },
+      { keys:['how','use','input'], answer:'Edit any yellow field. KPIs, 3D bars, projection chart and upsell update instantly. Reset defaults restores the sample scenario. Print/PDF for executives.' }
+    ];
+    function toggleChat() { $('chatPanel').classList.toggle('open'); }
+    function addMsg(text, who) {
+      const div = document.createElement('div'); div.className = 'msg '+who; div.textContent = text;
+      $('chatMessages').appendChild(div); $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
+    }
+    function botReply(q) {
+      const lower = q.toLowerCase();
+      for (const item of chatKnowledge) if (item.keys.some(k => lower.includes(k))) return item.answer;
+      return 'Ask about ROI, DSPM packages (Advanced/Enterprise/Plus), risk, compliance, DSR, ROT, insurance or the 3D charts.';
+    }
+    function sendChat() {
+      const input = $('chatInput'); const q = input.value.trim(); if (!q) return;
+      addMsg(q, 'user'); input.value = ''; setTimeout(() => addMsg(botReply(q), 'bot'), 300);
+    }
+    function startChat() {
+      addMsg('Hi — Securiti Value Assistant. Ask about ROI, 3D charts, packages or risk. Quick options:', 'bot');
+      const quick = document.createElement('div'); quick.className = 'quick-q';
+      ['Why upgrade DSPM?','How is ROI calculated?','What do the 3D bars mean?'].forEach(t => {
+        const b = document.createElement('button'); b.textContent = t;
+        b.onclick = () => { $('chatInput').value = t; sendChat(); }; quick.appendChild(b);
+      });
+      $('chatMessages').appendChild(quick);
+    }
+    startChat(); initThree(); recalc();
+  </script>
 </body>
 </html>
