@@ -3,145 +3,151 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Securiti.ai | 3D Client Value & ROI Dashboard</title>
+  <title>Securiti.ai | License Value & Upsell ROI Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     :root {
       --blue-dark: #0B1C2D; --blue-mid: #1A6B9A; --blue-accent: #3DB2FF;
       --teal: #00C9A7; --orange: #FF8C42; --green: #2ECC71; --risk: #E74C3C;
-      --gold: #F1C40F; --bg: #070D16; --card: rgba(18, 32, 52, 0.85);
+      --gold: #F1C40F; --bg: #070D16; --card: rgba(18, 32, 52, 0.88);
       --card-border: rgba(61, 178, 255, 0.18); --text: #E8F1F8; --muted: #8BA3B8;
-      --input-bg: rgba(255, 248, 220, 0.95);
+      --input-bg: rgba(255, 248, 220, 0.95); --have: #1E8449; --gap: #C0392B;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
     #bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
     .content { position: relative; z-index: 1; }
     header {
-      background: linear-gradient(135deg, rgba(11,28,45,0.95), rgba(26,107,154,0.9));
-      backdrop-filter: blur(12px); color: white; padding: 1rem 1.5rem;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;
+      background: linear-gradient(135deg, rgba(11,28,45,0.97), rgba(26,107,154,0.92));
+      backdrop-filter: blur(12px); color: white; padding: 0.9rem 1.4rem;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem;
       position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--card-border);
       box-shadow: 0 4px 24px rgba(0,0,0,0.4);
     }
-    header h1 {
-      font-size: 1.2rem; font-weight: 700;
-      background: linear-gradient(90deg, #fff, var(--blue-accent));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    header p { font-size: 0.75rem; opacity: 0.85; color: #B8D4E8; }
-    .header-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .btn { border: none; border-radius: 10px; padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
+    header h1 { font-size: 1.15rem; font-weight: 700; background: linear-gradient(90deg,#fff,var(--blue-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    header p { font-size: 0.72rem; color: #B8D4E8; }
+    .btn { border: none; border-radius: 10px; padding: 0.45rem 0.9rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: transform 0.2s; }
     .btn:hover { transform: translateY(-2px); }
-    .btn-primary { background: linear-gradient(135deg, var(--blue-accent), var(--teal)); color: #0B1C2D; box-shadow: 0 4px 16px rgba(61,178,255,0.35); }
+    .btn-primary { background: linear-gradient(135deg, var(--blue-accent), var(--teal)); color: #0B1C2D; }
     .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.35); }
-    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 1rem; padding: 1rem; max-width: 1600px; margin: 0 auto; }
+    .layout { display: grid; grid-template-columns: 360px 1fr; gap: 1rem; padding: 1rem; max-width: 1680px; margin: 0 auto; }
     @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
     .sidebar {
       background: var(--card); backdrop-filter: blur(16px); border: 1px solid var(--card-border);
-      border-radius: 16px; padding: 1rem; max-height: calc(100vh - 90px); overflow-y: auto;
-      position: sticky; top: 80px; box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+      border-radius: 16px; padding: 1rem; max-height: calc(100vh - 85px); overflow-y: auto;
+      position: sticky; top: 75px; box-shadow: 0 8px 32px rgba(0,0,0,0.35);
     }
     @media (max-width: 1100px) { .sidebar { position: static; max-height: none; } }
-    .sidebar h2 { font-size: 0.9rem; color: var(--blue-accent); margin-bottom: 0.7rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--card-border); }
-    .form-section { margin-bottom: 1.1rem; }
-    .form-section h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.45rem; }
-    label { display: block; font-size: 0.74rem; font-weight: 600; margin-bottom: 0.15rem; color: #C5D8E8; }
-    input, select {
-      width: 100%; padding: 0.42rem 0.55rem; border: 1px solid rgba(241,196,15,0.35); border-radius: 8px;
-      font-size: 0.82rem; background: var(--input-bg); color: #1a56db; font-weight: 600; margin-bottom: 0.5rem;
+    .sidebar h2 { font-size: 0.88rem; color: var(--blue-accent); margin-bottom: 0.6rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--card-border); }
+    .form-section { margin-bottom: 1rem; }
+    .form-section h3 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.4rem; }
+    label { display: block; font-size: 0.72rem; font-weight: 600; margin-bottom: 0.12rem; color: #C5D8E8; }
+    input[type=number], input[type=text], select {
+      width: 100%; padding: 0.38rem 0.5rem; border: 1px solid rgba(241,196,15,0.35); border-radius: 7px;
+      font-size: 0.8rem; background: var(--input-bg); color: #1a56db; font-weight: 600; margin-bottom: 0.4rem;
     }
-    input:focus, select:focus { outline: 2px solid var(--blue-accent); border-color: var(--blue-accent); }
-    .hint { font-size: 0.68rem; color: var(--muted); margin-top: -0.35rem; margin-bottom: 0.45rem; }
-    .main { display: flex; flex-direction: column; gap: 1rem; }
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 0.85rem; perspective: 1200px; }
+    .hint { font-size: 0.65rem; color: var(--muted); margin-top: -0.25rem; margin-bottom: 0.4rem; }
+    .chk-row {
+      display: flex; align-items: flex-start; gap: 0.45rem; padding: 0.35rem 0.4rem;
+      border-radius: 8px; margin-bottom: 0.25rem; cursor: pointer; transition: background 0.15s;
+    }
+    .chk-row:hover { background: rgba(61,178,255,0.08); }
+    .chk-row input { width: auto; margin: 0.15rem 0 0; accent-color: var(--teal); }
+    .chk-row .chk-label { font-size: 0.75rem; color: #D0E4F5; line-height: 1.3; }
+    .chk-row .chk-desc { font-size: 0.65rem; color: var(--muted); }
+    .main { display: flex; flex-direction: column; gap: 0.9rem; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.7rem; perspective: 1000px; }
     .kpi {
-      background: var(--card); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 14px;
-      padding: 1rem; transform-style: preserve-3d; transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), box-shadow 0.35s;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.07); position: relative; overflow: hidden;
+      background: var(--card); border: 1px solid var(--card-border); border-radius: 12px; padding: 0.85rem;
+      transition: transform 0.3s; box-shadow: 0 6px 18px rgba(0,0,0,0.3); position: relative; overflow: hidden;
     }
-    .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0; }
-    .kpi.risk::before { background: linear-gradient(90deg, var(--risk), #FF6B6B); }
-    .kpi.compliance::before { background: linear-gradient(90deg, var(--teal), #48DBB4); }
-    .kpi.efficiency::before { background: linear-gradient(90deg, var(--blue-accent), #5BC0FF); }
-    .kpi.insurance::before { background: linear-gradient(90deg, var(--green), #58D68D); }
-    .kpi.total::before { background: linear-gradient(90deg, var(--orange), var(--gold)); }
-    .kpi:hover { transform: translateY(-8px) rotateX(6deg) scale(1.02); box-shadow: 0 16px 40px rgba(0,0,0,0.45), 0 0 24px rgba(61,178,255,0.15); }
-    .kpi .label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
-    .kpi .value {
-      font-size: 1.3rem; font-weight: 800; margin-top: 0.3rem;
-      background: linear-gradient(135deg, #fff, var(--blue-accent));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .kpi.total .value {
-      background: linear-gradient(135deg, var(--gold), var(--orange));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .kpi .sub { font-size: 0.68rem; color: var(--muted); margin-top: 0.2rem; }
+    .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .kpi.have::before { background: var(--green); }
+    .kpi.gap::before { background: var(--risk); }
+    .kpi.save::before { background: linear-gradient(90deg, var(--orange), var(--gold)); }
+    .kpi:hover { transform: translateY(-6px) rotateX(4deg); }
+    .kpi .label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; }
+    .kpi .value { font-size: 1.15rem; font-weight: 800; margin-top: 0.2rem; color: #fff; }
+    .kpi .sub { font-size: 0.65rem; color: var(--muted); margin-top: 0.15rem; }
     .card {
-      background: var(--card); backdrop-filter: blur(14px); border: 1px solid var(--card-border);
-      border-radius: 16px; padding: 1.1rem; box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+      background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 1rem;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.28);
     }
-    .card h3 { font-size: 0.9rem; color: var(--blue-accent); margin-bottom: 0.7rem; font-weight: 700; }
-    .charts { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1rem; }
-    @media (max-width: 900px) { .charts { grid-template-columns: 1fr; } }
-    .chart-wrap { position: relative; height: 260px; }
-    #three-container {
-      width: 100%; height: 280px; border-radius: 12px; overflow: hidden;
-      background: radial-gradient(ellipse at center, #122034 0%, #070D16 70%);
+    .card h3 { font-size: 0.88rem; color: var(--blue-accent); margin-bottom: 0.65rem; font-weight: 700; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+    @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+    #three-container { width: 100%; height: 240px; border-radius: 10px; background: radial-gradient(ellipse at center, #122034, #070D16); }
+    .chart-wrap { height: 220px; position: relative; }
+    .module-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; }
+    .mod-card {
+      border-radius: 10px; padding: 0.65rem 0.75rem; border: 1px solid var(--card-border);
+      font-size: 0.78rem;
     }
+    .mod-card.owned { background: rgba(30,132,73,0.15); border-color: rgba(46,204,113,0.35); }
+    .mod-card.missing { background: rgba(192,57,43,0.12); border-color: rgba(231,76,60,0.3); }
+    .mod-card .mod-name { font-weight: 700; margin-bottom: 0.2rem; }
+    .mod-card.owned .mod-name { color: var(--green); }
+    .mod-card.missing .mod-name { color: #FF8A80; }
+    .mod-card .mod-out { font-size: 0.72rem; color: #B8D0E4; }
+    .badge { display: inline-block; padding: 0.12rem 0.4rem; border-radius: 999px; font-size: 0.65rem; font-weight: 700; }
+    .badge-have { background: rgba(46,204,113,0.25); color: var(--green); }
+    .badge-gap { background: rgba(231,76,60,0.25); color: #FF8A80; }
     .upsell {
-      background: linear-gradient(135deg, rgba(241,196,15,0.12), rgba(255,140,66,0.15));
-      border: 1px solid rgba(241,196,15,0.4); border-radius: 16px; padding: 1.1rem 1.3rem;
-      display: flex; gap: 1rem; align-items: flex-start; flex-wrap: wrap;
-      box-shadow: 0 8px 24px rgba(241,196,15,0.1); transform: perspective(800px) rotateX(1deg);
+      background: linear-gradient(135deg, rgba(241,196,15,0.12), rgba(255,140,66,0.14));
+      border: 1px solid rgba(241,196,15,0.4); border-radius: 14px; padding: 1rem 1.15rem;
     }
-    .upsell .icon { font-size: 2rem; filter: drop-shadow(0 4px 8px rgba(241,196,15,0.4)); }
-    .upsell h4 { color: var(--gold); font-size: 0.95rem; margin-bottom: 0.3rem; }
-    .upsell p { font-size: 0.82rem; color: #E8D5A3; }
-    .upsell ul { margin: 0.4rem 0 0 1.1rem; font-size: 0.8rem; color: #D4C48A; }
-    .package-badge { display: inline-block; padding: 0.18rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; margin-right: 0.25rem; }
-    .pkg-adv { background: rgba(61,178,255,0.25); color: var(--blue-accent); }
-    .pkg-ent { background: rgba(46,204,113,0.25); color: var(--green); }
-    .pkg-plus { background: rgba(231,76,60,0.25); color: #FF8A80; }
+    .upsell h4 { color: var(--gold); font-size: 0.9rem; margin-bottom: 0.35rem; }
+    .upsell ul { margin: 0.35rem 0 0 1.1rem; font-size: 0.78rem; color: #D4C48A; }
+    .cloud-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+    @media (max-width: 700px) { .cloud-grid { grid-template-columns: 1fr 1fr; } }
+    .cloud-card {
+      text-align: center; padding: 0.7rem; border-radius: 10px;
+      background: rgba(61,178,255,0.08); border: 1px solid var(--card-border);
+    }
+    .cloud-card .cname { font-size: 0.72rem; color: var(--muted); }
+    .cloud-card .cval { font-size: 1rem; font-weight: 800; color: var(--teal); margin-top: 0.2rem; }
+    .chat-toggle {
+      position: fixed; bottom: 1.2rem; right: 1.2rem; width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: white; border: none;
+      font-size: 1.4rem; cursor: pointer; box-shadow: 0 6px 22px rgba(61,178,255,0.45); z-index: 200;
+    }
+    .chat-panel {
+      position: fixed; bottom: 5.4rem; right: 1.2rem; width: 350px; max-width: calc(100vw - 2rem); height: 420px;
+      background: rgba(12,24,40,0.97); border: 1px solid var(--card-border); border-radius: 16px;
+      display: none; flex-direction: column; z-index: 200; overflow: hidden;
+    }
+    .chat-panel.open { display: flex; }
+    .chat-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid)); padding: 0.8rem 1rem; font-weight: 600; font-size: 0.85rem; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .msg { max-width: 88%; padding: 0.5rem 0.7rem; border-radius: 11px; font-size: 0.78rem; }
+    .msg.bot { background: rgba(26,107,154,0.3); align-self: flex-start; }
+    .msg.user { background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); align-self: flex-end; }
+    .chat-input-row { display: flex; gap: 0.35rem; padding: 0.55rem; border-top: 1px solid var(--card-border); }
+    .chat-input-row input { flex: 1; margin: 0; background: rgba(255,255,255,0.08); color: var(--text); border-color: var(--card-border); }
+    .chat-input-row button { background: var(--blue-accent); color: #0B1C2D; border: none; border-radius: 8px; padding: 0 0.8rem; font-weight: 700; cursor: pointer; }
+    footer { text-align: center; padding: 1rem; font-size: 0.7rem; color: var(--muted); }
+    .note { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; padding: 0.45rem 0.65rem; background: rgba(61,178,255,0.07); border-radius: 8px; }
+  
     .pkg-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
     .pkg-table th, .pkg-table td { padding: 0.4rem 0.55rem; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
     .pkg-table th { background: rgba(26,107,154,0.5); color: white; font-weight: 600; }
     .pkg-table tr:hover { background: rgba(61,178,255,0.06); }
     .check { color: var(--green); font-weight: 700; }
     .cross { color: #3A4A5C; }
-    .chat-toggle {
-      position: fixed; bottom: 1.25rem; right: 1.25rem; width: 58px; height: 58px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: white; border: none;
-      font-size: 1.5rem; cursor: pointer; box-shadow: 0 6px 24px rgba(61,178,255,0.45); z-index: 200; transition: transform 0.25s;
+
+  
+    .view-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.65rem; }
+    .vtab {
+      background: rgba(61,178,255,0.1); border: 1px solid var(--card-border); color: #B8D4E8;
+      border-radius: 999px; padding: 0.35rem 0.75rem; font-size: 0.72rem; font-weight: 600; cursor: pointer;
     }
-    .chat-toggle:hover { transform: scale(1.08); }
-    .chat-panel {
-      position: fixed; bottom: 5.6rem; right: 1.25rem; width: 360px; max-width: calc(100vw - 2rem); height: 440px;
-      background: rgba(12, 24, 40, 0.96); backdrop-filter: blur(20px); border: 1px solid var(--card-border);
-      border-radius: 18px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 200; overflow: hidden;
-    }
-    .chat-panel.open { display: flex; }
-    .chat-header { background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid)); color: white; padding: 0.85rem 1rem; font-weight: 600; font-size: 0.88rem; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.55rem; background: rgba(7,13,22,0.5); }
-    .msg { max-width: 88%; padding: 0.55rem 0.75rem; border-radius: 12px; font-size: 0.8rem; line-height: 1.4; }
-    .msg.bot { background: rgba(26,107,154,0.25); border: 1px solid var(--card-border); align-self: flex-start; color: #D0E4F5; }
-    .msg.user { background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: white; align-self: flex-end; }
-    .chat-input-row { display: flex; gap: 0.4rem; padding: 0.65rem; border-top: 1px solid var(--card-border); }
-    .chat-input-row input { flex: 1; margin: 0; background: rgba(255,255,255,0.08); color: var(--text); border-color: var(--card-border); }
-    .chat-input-row button { background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: white; border: none; border-radius: 8px; padding: 0 0.9rem; font-weight: 600; cursor: pointer; }
-    .quick-q { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.25rem; }
-    .quick-q button { font-size: 0.68rem; padding: 0.22rem 0.45rem; border-radius: 999px; border: 1px solid var(--card-border); background: rgba(61,178,255,0.1); color: var(--blue-accent); cursor: pointer; }
-    footer { text-align: center; padding: 1.2rem; font-size: 0.72rem; color: var(--muted); }
-    .projection-note { font-size: 0.75rem; color: var(--muted); margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(61,178,255,0.08); border-radius: 8px; border: 1px solid var(--card-border); }
-    .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.82rem; color: #B8D0E4; }
-    .detail-grid strong { color: var(--blue-accent); display: block; margin-bottom: 0.25rem; }
-    @media print {
-      #bg-canvas, .chat-toggle, .chat-panel, .sidebar { display: none !important; }
-      .layout { grid-template-columns: 1fr; } body { background: white; color: black; }
-      .kpi, .card { box-shadow: none; border: 1px solid #ccc; background: white; color: black; }
-    }
+    .vtab:hover { background: rgba(61,178,255,0.2); }
+    .vtab.active { background: linear-gradient(135deg, var(--blue-mid), var(--blue-accent)); color: #0B1C2D; border-color: transparent; }
+    #three-container { cursor: grab; }
+    #three-container:active { cursor: grabbing; }
+
   </style>
 </head>
 <body>
@@ -149,372 +155,730 @@
   <div class="content">
     <header>
       <div>
-        <h1>Securiti.ai  ·  3D Client Value & ROI Dashboard</h1>
-        <p>Interactive executive model · Live updates · Package upsell · Share with Securiti</p>
+        <h1>Securiti.ai · License Value & Upsell ROI</h1>
+        <p>Tell us what you own · See entitlements, gaps & storage savings · 3D dashboard</p>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-outline" onclick="resetDefaults()">Reset defaults</button>
+      <div style="display:flex;gap:0.45rem;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="resetDefaults()">Reset</button>
         <button class="btn btn-primary" onclick="window.print()">Print / PDF</button>
       </div>
     </header>
+
     <div class="layout">
+      <!-- INPUTS -->
       <aside class="sidebar">
-        <h2>Your Inputs</h2>
-        <p class="hint">Yellow fields drive the 3D dashboard. Results update as you type.</p>
+        <h2>1. Who are you?</h2>
         <div class="form-section">
-          <h3>Customer profile</h3>
-          <label>Company name</label><input id="company" value="Example Telecom Co." oninput="recalc()" />
-          <label>Industry</label><input id="industry" value="Telecommunications" oninput="recalc()" />
-          <label>Region</label>
-          <select id="region" onchange="recalc()"><option>EMEA</option><option>Americas</option><option>APAC</option></select>
-        </div>
-        <div class="form-section">
-          <h3>Global assumptions</h3>
-          <label>Annual revenue ($)</label><input id="revenue" type="number" value="5000000000" oninput="recalc()" />
-          <label>Market cap ($)</label><input id="marketCap" type="number" value="5000000000" oninput="recalc()" />
-          <label>Total data protected (TB)</label><input id="dataTB" type="number" value="100" step="0.1" oninput="recalc()" />
-          <label>US data subjects</label><input id="usSubjects" type="number" value="1000000" oninput="recalc()" />
-          <label>DSRs per year</label><input id="dsrs" type="number" value="100" oninput="recalc()" />
-        </div>
-        <div class="form-section">
-          <h3>Risk inputs</h3>
-          <label>% data containing PII</label><input id="pctPII" type="number" value="13" step="0.1" oninput="recalc()" />
-          <label># files containing PII</label><input id="piiFiles" type="number" value="29954" oninput="recalc()" />
-          <label>Breach cost per PII file ($)</label><input id="costPerFile" type="number" value="183" oninput="recalc()" />
-          <label>Market cap drop on breach (%)</label><input id="mcapDrop" type="number" value="7.5" step="0.1" oninput="recalc()" />
-        </div>
-        <div class="form-section">
-          <h3>Compliance inputs</h3>
-          <label>% US pop. in privacy-law states</label><input id="pctUSPrivacy" type="number" value="40" oninput="recalc()" />
-          <label>US penalty per data subject ($)</label><input id="usPenalty" type="number" value="0.39" step="0.01" oninput="recalc()" />
-          <label>EU AI Act penalty – capped ($)</label><input id="aiActCap" type="number" value="7500000" oninput="recalc()" />
-          <label>GDPR penalty – capped ($)</label><input id="gdprCap" type="number" value="10000000" oninput="recalc()" />
-        </div>
-        <div class="form-section">
-          <h3>Efficiency inputs</h3>
-          <label>Annual DSR growth rate (%)</label><input id="dsrGrowth" type="number" value="72" oninput="recalc()" />
-          <label>Cost per DSR ($)</label><input id="costDSR" type="number" value="1524" oninput="recalc()" />
-          <label>% time reduced via automation</label><input id="dsrReduce" type="number" value="60" oninput="recalc()" />
-          <label>ROT % of total data</label><input id="rotPct" type="number" value="28" oninput="recalc()" />
-          <label>Storage cost $/TB / year</label><input id="storageCost" type="number" value="3351" oninput="recalc()" />
-        </div>
-        <div class="form-section">
-          <h3>Cyber insurance</h3>
-          <label>Premium per $1M revenue ($)</label><input id="insPerM" type="number" value="1589" oninput="recalc()" />
-          <label>% reduction via discovery</label><input id="insReduce" type="number" value="5" oninput="recalc()" />
-        </div>
-        <div class="form-section">
-          <h3>Current DSPM package</h3>
-          <label>Your package</label>
-          <select id="dspmPackage" onchange="recalc()">
-            <option value="none">None / Evaluating</option>
-            <option value="advanced" selected>DSPM Advanced</option>
-            <option value="enterprise">DSPM Enterprise</option>
-            <option value="enterprise_plus">DSPM Enterprise Plus</option>
+          <label>Company name</label>
+          <input id="company" type="text" value="Example Telecom Co." oninput="recalc()" />
+          <label>Industry</label>
+          <input id="industry" type="text" value="Telecommunications" oninput="recalc()" />
+          <label>Cloud provider (primary storage)</label>
+          <select id="cloud" onchange="recalc()">
+            <option value="aws">AWS (S3 / EBS)</option>
+            <option value="azure">Azure (Blob)</option>
+            <option value="gcp">GCP (Cloud Storage)</option>
+            <option value="oci">OCI (Object Storage)</option>
+            <option value="mixed">Mixed / Multi-cloud</option>
           </select>
-          <div class="hint">Upsell banner updates automatically</div>
+        </div>
+
+        <h2>2. Current Securiti licenses (BOM)</h2>
+        <p class="hint">Check every module / product you already have or that is in the current quote.</p>
+        <div class="form-section" id="licenseChecks"></div>
+
+        <h2>3. Environment sizing</h2>
+        <div class="form-section">
+          <label>Structured data under management (TB)</label>
+          <input id="structTB" type="number" value="100" oninput="recalc()" />
+          <div class="hint">BOM: Data Under Management – Enterprise covers 100 TB structured per unit</div>
+          <label>Unstructured data under management (TB)</label>
+          <input id="unstructTB" type="number" value="100" oninput="recalc()" />
+          <div class="hint">BOM: 100 TB unstructured per unit</div>
+          <label>% of unstructured that is ROT</label>
+          <input id="rotPct" type="number" value="28" oninput="recalc()" />
+          <label>% of ROT safely quarantined / deleted</label>
+          <input id="rotRemediate" type="number" value="70" oninput="recalc()" />
+          <label>Fully loaded storage cost $/TB / year</label>
+          <input id="storageCost" type="number" value="3351" oninput="recalc()" />
+          <div class="hint">Includes primary + backup + ops on your cloud</div>
+        </div>
+
+        <div class="form-section">
+          <label>Data systems for Robotic DSR (count)</label>
+          <input id="dsrSystems" type="number" value="25" oninput="recalc()" />
+          <div class="hint">BOM: Robotic Automation 1–100 systems per license unit</div>
+          <label>DSRs received per year</label>
+          <input id="dsrsYear" type="number" value="400" oninput="recalc()" />
+          <label>Cost per manual DSR ($)</label>
+          <input id="costDSR" type="number" value="1524" oninput="recalc()" />
+        </div>
+
+        <div class="form-section">
+          <label>Cookie Consent MAU (Monthly Active Unique Users)</label>
+          <input id="cookieMAU" type="number" value="1000000" oninput="recalc()" />
+          <div class="hint">BOM: 1 qty = up to 100K MAU → units = ceil(MAU/100K)</div>
+          <label>Universal Consent MAU</label>
+          <input id="univMAU" type="number" value="200000" oninput="recalc()" />
+          <label>Mobile Consent MAU</label>
+          <input id="mobileMAU" type="number" value="200000" oninput="recalc()" />
+        </div>
+
+        <div class="form-section">
+          <label>Vendor assessments needed / year</label>
+          <input id="vendors" type="number" value="50" oninput="recalc()" />
+          <label>Internal assessments / year</label>
+          <input id="assessments" type="number" value="20" oninput="recalc()" />
+          <label>Privacy workflows needed</label>
+          <input id="workflows" type="number" value="15" oninput="recalc()" />
+          <label>Breach workflows / year (est.)</label>
+          <input id="breaches" type="number" value="4" oninput="recalc()" />
         </div>
       </aside>
+
+      <!-- OUTPUTS -->
       <main class="main">
         <div class="kpi-grid">
-          <div class="kpi risk"><div class="label">Sensitive Data Risk</div><div class="value" id="kpiSensRisk">—</div><div class="sub">PII exposure cost</div></div>
-          <div class="kpi risk"><div class="label">Market Cap Risk</div><div class="value" id="kpiMcapRisk">—</div><div class="sub">Potential value impact</div></div>
-          <div class="kpi compliance"><div class="label">Compliance Risk (US+EU)</div><div class="value" id="kpiCompRisk">—</div><div class="sub">Regulatory exposure</div></div>
-          <div class="kpi efficiency"><div class="label">3YR Efficiency Benefit</div><div class="value" id="kpiEff">—</div><div class="sub">DSR + ROT savings</div></div>
-          <div class="kpi insurance"><div class="label">3YR Cyber Ins. Savings</div><div class="value" id="kpiIns">—</div><div class="sub">Premium reduction</div></div>
-          <div class="kpi total"><div class="label">Hard $ 3YR Benefit</div><div class="value" id="kpiTotal">—</div><div class="sub">Efficiency + Insurance</div></div>
+          <div class="kpi save">
+            <div class="label">ROT volume quarantined</div>
+            <div class="value" id="kpiRotTB">—</div>
+            <div class="sub">TB removable / year</div>
+          </div>
+          <div class="kpi save">
+            <div class="label">Annual storage savings</div>
+            <div class="value" id="kpiStorSave">—</div>
+            <div class="sub" id="kpiCloudName">on your cloud</div>
+          </div>
+          <div class="kpi save">
+            <div class="label">3YR storage savings</div>
+            <div class="value" id="kpiStor3">—</div>
+            <div class="sub">ROT cost avoided</div>
+          </div>
+          <div class="kpi save">
+            <div class="label">3YR DSR opex saved</div>
+            <div class="value" id="kpiDsrSave">—</div>
+            <div class="sub">@ 60% automation</div>
+          </div>
+          <div class="kpi have">
+            <div class="label">Modules you own</div>
+            <div class="value" id="kpiOwned">—</div>
+            <div class="sub">of BOM catalog</div>
+          </div>
+          <div class="kpi gap">
+            <div class="label">Upsell gaps</div>
+            <div class="value" id="kpiGaps">—</div>
+            <div class="sub">recommended to add</div>
+          </div>
         </div>
+
         <div class="upsell" id="upsellBox">
-          <div class="icon">🚀</div>
-          <div style="flex:1"><h4 id="upsellTitle">Package recommendation</h4><p id="upsellBody"></p><ul id="upsellList"></ul></div>
+          <h4 id="upsellTitle">Upsell recommendations</h4>
+          <ul id="upsellList"></ul>
         </div>
-        <div class="charts">
-          <div class="card">
-            <h3>3D Value Mix — Hard $ Benefits</h3>
-            <div id="three-container"></div>
-            <div class="projection-note" id="projectionNote"></div>
-          </div>
-          <div class="card">
-            <h3>3-Year Value Projection</h3>
-            <div class="chart-wrap"><canvas id="chartProjection"></canvas></div>
-          </div>
-        </div>
+
         <div class="card">
-          <h3>DSPM Package Comparison</h3>
+          <h3>What Securiti gives you with current + recommended licenses</h3>
+          <div class="module-grid" id="moduleOutputs"></div>
+        </div>
+
+        <div class="two-col">
+          <div class="card" style="grid-column:1/-1">
+            <h3>Interactive 3D dashboards — click &amp; drag to rotate 360° · scroll to zoom</h3>
+            <div class="view-tabs" id="viewTabs">
+              <button type="button" class="vtab active" data-view="0">Cloud savings bars</button>
+              <button type="button" class="vtab" data-view="1">Value mix rings</button>
+              <button type="button" class="vtab" data-view="2">Module coverage towers</button>
+              <button type="button" class="vtab" data-view="3">3YR projection pillars</button>
+            </div>
+            <div id="three-container" style="height:340px"></div>
+            <div class="note" id="rotNote"></div>
+            <p class="hint" style="margin-top:0.4rem;color:#8BA3B8">Drag left/right or up/down for full orbit · Scroll wheel zooms · Switch tabs for different 3D views</p>
+          </div>
+          <div class="card">
+            <h3>Cloud storage cost avoided (annual)</h3>
+            <div class="cloud-grid" id="cloudGrid"></div>
+            <div class="chart-wrap" style="margin-top:0.75rem"><canvas id="chartSave"></canvas></div>
+          </div>
+        </div>
+
+        
+        <div class="card">
+          <h3>DSPM package capability matrix (all checkboxes)</h3>
+          <p class="note" style="margin-bottom:0.6rem">Advanced → Enterprise → Enterprise Plus. <strong>Workflow Module</strong> and <strong>Unlimited Customer Hosted Pods</strong> are included in <strong>all packages</strong> (Advanced, Enterprise, Enterprise Plus).</p>
           <div style="overflow-x:auto">
-            <table class="pkg-table">
-              <thead><tr><th>Capability</th><th>Advanced</th><th>Enterprise</th><th>Enterprise Plus</th></tr></thead>
+            <table class="pkg-table" id="dspmMatrix">
+              <thead>
+                <tr>
+                  <th>Capability</th>
+                  <th>Advanced</th>
+                  <th>Enterprise</th>
+                  <th>Enterprise Plus</th>
+                </tr>
+              </thead>
               <tbody>
                 <tr><td>Data Command Center</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
                 <tr><td>Data Inventory Sync</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
                 <tr><td>Data Scanning and Classification</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
                 <tr><td>File Clustering Analysis</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-                <tr><td>Insights Policies</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-                <tr><td>Cloud Asset Discovery & Posture</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
-                <tr><td>AI Model Discovery & Posture</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Insights Policies (structured & unstructured)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Cloud Asset Discovery and Posture Policies</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>AI Model Discovery and Posture Policies</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
                 <tr><td>VM Package Discovery</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
-                <tr><td>Compliance Mgmt & Data Risk Scoring</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
-                <tr><td>Access Intelligence</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
-                <tr><td>Automation Policies (ITSM / email)</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
-                <tr><td>Remediation on Data</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
-                <tr><td>Remediation on Cloud / SaaS</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
-                <tr><td>Access Remediation (Masking, Filtering)</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
-                <tr><td>Workflow Module</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
-                <tr><td>Unlimited Customer Hosted Pods</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td>Compliance Management, Tests, and Data Risk Scoring</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Access Intelligence (Privilege and Activity Analysis)</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Automation Policies (Federated Remediation, ITSM, email)</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Remediation Actions on Data – Quarantine, Labeling</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td>Remediation Actions on Cloud Infrastructure and SaaS</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td>Access Remediation – Control, Masking, Row Filtering</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+                <tr><td><strong>Workflow Module</strong></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td><strong>Unlimited Customer Hosted Pods</strong></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
               </tbody>
             </table>
           </div>
         </div>
+
         <div class="card">
-          <h3>Detailed breakdown</h3>
-          <div class="detail-grid">
-            <div><strong>Risk</strong><div>Sensitive Data Risk: <span id="dSens"></span></div><div>Market Cap Risk: <span id="dMcap"></span></div></div>
-            <div><strong>Compliance</strong><div>US Opt #1: <span id="dUS1"></span></div><div>US Opt #2: <span id="dUS2"></span></div><div>EU (GDPR+AI Act): <span id="dEU"></span></div></div>
-            <div><strong>Efficiency (3YR)</strong><div>DSR Opex reduction: <span id="dDSR"></span></div><div>ROT storage savings: <span id="dROT"></span></div></div>
-            <div><strong>Cyber insurance</strong><div>Annual savings: <span id="dInsY"></span></div><div>3YR savings: <span id="dIns3"></span></div></div>
-          </div>
+          <h3>Entitlement vs need (from your sizing)</h3>
+          <div id="entitleTable" style="overflow-x:auto;font-size:0.8rem"></div>
         </div>
       </main>
     </div>
-    <footer>Securiti.ai 3D Client Value Model · Internal executive use & joint review with Securiti · Validate with discovery data</footer>
+    <footer>Securiti.ai License Value Model · Based on sample BOM packaging · For executive use & joint review with Securiti · Validate with official quote</footer>
   </div>
-  <button class="chat-toggle" onclick="toggleChat()" title="Ask a question">💬</button>
+
+  <button class="chat-toggle" onclick="toggleChat()">💬</button>
   <div class="chat-panel" id="chatPanel">
     <div class="chat-header">Securiti Value Assistant</div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-row">
-      <input id="chatInput" placeholder="Ask about ROI, packages, risk…" onkeydown="if(event.key==='Enter')sendChat()" />
+      <input id="chatInput" placeholder="Ask about licenses, ROT, consent…" onkeydown="if(event.key==='Enter')sendChat()" />
       <button onclick="sendChat()">Send</button>
     </div>
   </div>
+
   <script>
     const $ = id => document.getElementById(id);
     const num = id => parseFloat($(id).value) || 0;
     const fmt = n => {
-      if (Math.abs(n) >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
-      if (Math.abs(n) >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M';
-      if (Math.abs(n) >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K';
-      return '$' + Math.round(n).toLocaleString();
+      if (Math.abs(n) >= 1e9) return '$'+(n/1e9).toFixed(2)+'B';
+      if (Math.abs(n) >= 1e6) return '$'+(n/1e6).toFixed(2)+'M';
+      if (Math.abs(n) >= 1e3) return '$'+(n/1e3).toFixed(1)+'K';
+      return '$'+Math.round(n).toLocaleString();
     };
-    const fmtFull = n => '$' + Math.round(n).toLocaleString();
-    let chartProj, threeScene, threeCamera, threeRenderer, threeBars = [];
+    const fmtN = n => Math.round(n).toLocaleString();
 
-    (function initBg() {
-      const canvas = $('bg-canvas');
-      const ctx = canvas.getContext('2d');
-      let w, h, particles = [];
-      function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-      function spawn() {
-        particles = [];
-        for (let i = 0; i < 60; i++) particles.push({ x: Math.random()*w, y: Math.random()*h, z: Math.random()*2+0.3, vx: (Math.random()-0.5)*0.15, vy: (Math.random()-0.5)*0.15 });
+    // BOM catalog aligned to sample
+    const CATALOG = [
+      { id: 'dum_struct', name: 'Data Under Management – Enterprise (Structured)', unit: '100 TB structured',
+        output: (s) => `Scans & classifies up to ${fmtN(Math.ceil(s.structTB/100)*100)} TB structured (visibility across on-prem / hybrid / multi-cloud)` },
+      { id: 'dum_unstruct', name: 'Data Under Management – Enterprise (Unstructured)', unit: '100 TB unstructured',
+        output: (s) => `Scans & classifies up to ${fmtN(Math.ceil(s.unstructTB/100)*100)} TB unstructured · enables ROT discovery` },
+      { id: 'workflow', name: 'Workflow Automation', unit: 'Plan',
+        output: (s) => `Automate privacy functions · supports ~${s.workflows} custom workflows you sized` },
+      { id: 'assessment', name: 'Assessment Automation', unit: 'Unlimited assessments / year',
+        output: (s) => `Unlimited internal assessments · you need ~${s.assessments}/yr · collaborative SME + artifact mapping` },
+      { id: 'datamapping', name: 'Data Mapping Automation (RoPA)', unit: 'Unlimited data flows',
+        output: () => `Unlimited data flows, cross-border transfers, vendor contracts & compliance records (RoPA)` },
+      { id: 'dsr_portal', name: 'DSR Portal & Workbench', unit: 'Portal + workbench',
+        output: (s) => `Secure portal for ~${fmtN(s.dsrsYear)} DSRs/yr · identity verification · SME collaboration` },
+      { id: 'robotic_dsr', name: 'Robotic Automation for DSR (1–100 systems)', unit: '1–100 data systems / license',
+        output: (s) => `AI DSR scan across ${s.dsrSystems} systems · ${Math.ceil(s.dsrSystems/100)} license unit(s) recommended` },
+      { id: 'vendor', name: 'Vendor Risk Management', unit: 'Unlimited vendor assessments',
+        output: (s) => `Unlimited vendor assessments · you need ~${s.vendors}/yr · contracts & collaboration` },
+      { id: 'breach', name: 'Data Breach Management', unit: '250 workflows / year',
+        output: (s) => `Full incident lifecycle · 250 workflows included · you estimated ${s.breaches} breach events/yr` },
+      { id: 'univ_consent', name: 'Universal Consent Management – Enterprise', unit: '100K MAU / unit',
+        output: (s) => `Covers ${fmtN(s.univMAU)} MAU · ${Math.ceil(s.univMAU/1e5)} unit(s) · multi-channel consent` },
+      { id: 'cookie', name: 'Cookie Consent – Enterprise', unit: '100K MAU / unit',
+        output: (s) => `Covers ${fmtN(s.cookieMAU)} MAU · ${Math.ceil(s.cookieMAU/1e5)} unit(s) · scan, banner, block · unlimited domains` },
+      { id: 'mobile', name: 'Mobile Consent', unit: '100K MAU / unit',
+        output: (s) => `Covers ${fmtN(s.mobileMAU)} MAU · ${Math.ceil(s.mobileMAU/1e5)} unit(s) · unlimited apps` },
+      { id: 'privacy_notice', name: 'Privacy Notice Management', unit: 'Notices under management',
+        output: () => `Centralized privacy notice lifecycle & publishing` },
+      { id: 'dspm_adv', name: 'DSPM Advanced', unit: 'Package',
+        output: () => `Data Command Center, Inventory, Scanning, Classification, File Clustering, Insights Policies, Workflow Module, Unlimited Customer Hosted Pods` },
+      { id: 'dspm_ent', name: 'DSPM Enterprise', unit: 'Package',
+        output: () => `Advanced + Cloud Asset Discovery, AI Model Discovery, Compliance Scoring, Access Intelligence, Automation Policies, Workflow Module, Unlimited Hosted Pods` },
+      { id: 'dspm_plus', name: 'DSPM Enterprise Plus', unit: 'Package',
+        output: () => `Enterprise + Remediation (data/cloud/SaaS), Access Masking/Filtering + Workflow Module & Unlimited Hosted Pods (all tiers)` },
+      { id: 'workflow_module_plus', name: 'Workflow Module', unit: 'Included in Advanced, Enterprise & Enterprise Plus',
+        output: () => `Privacy & security workflow orchestration — included in all DSPM packages` },
+      { id: 'unlimited_pods', name: 'Unlimited Customer Hosted Pods', unit: 'Included in Advanced, Enterprise & Enterprise Plus',
+        output: () => `Unlimited customer-hosted pods for scale-out collectors/sensors — all DSPM packages` },
+    ];
+
+    // Default owned = sample BOM-ish
+    const DEFAULT_OWNED = new Set(['dum_struct','dum_unstruct','workflow','assessment','datamapping','dsr_portal','robotic_dsr','vendor','breach','univ_consent','cookie','mobile']);
+
+    function buildLicenseChecks() {
+      const box = $('licenseChecks');
+      box.innerHTML = '';
+      CATALOG.forEach(m => {
+        const row = document.createElement('label');
+        row.className = 'chk-row';
+        const checked = DEFAULT_OWNED.has(m.id) ? 'checked' : '';
+        row.innerHTML = `<input type="checkbox" id="lic_${m.id}" ${checked} onchange="recalc()" />
+          <span><span class="chk-label">${m.name}</span><br><span class="chk-desc">${m.unit}</span></span>`;
+        box.appendChild(row);
+      });
+    }
+
+    function state() {
+      const owned = {};
+      CATALOG.forEach(m => { owned[m.id] = !!$('lic_'+m.id)?.checked; });
+      return {
+        company: $('company').value,
+        cloud: $('cloud').value,
+        structTB: num('structTB'),
+        unstructTB: num('unstructTB'),
+        rotPct: num('rotPct')/100,
+        rotRemediate: num('rotRemediate')/100,
+        storageCost: num('storageCost'),
+        dsrSystems: num('dsrSystems'),
+        dsrsYear: num('dsrsYear'),
+        costDSR: num('costDSR'),
+        cookieMAU: num('cookieMAU'),
+        univMAU: num('univMAU'),
+        mobileMAU: num('mobileMAU'),
+        vendors: num('vendors'),
+        assessments: num('assessments'),
+        workflows: num('workflows'),
+        breaches: num('breaches'),
+        owned
+      };
+    }
+
+    const CLOUD_LABEL = { aws:'AWS', azure:'Azure', gcp:'GCP', oci:'OCI', mixed:'Multi-cloud' };
+    // Relative cost factors for illustration (primary cloud slightly different)
+    const CLOUD_FACTOR = { aws:1.0, azure:0.98, gcp:0.95, oci:0.92, mixed:1.0 };
+
+    let chartSave, threeBars = [], threeRenderer, threeScene, threeCamera;
+
+    function recalc() {
+      const s = state();
+      const rotTB = s.unstructTB * s.rotPct * s.rotRemediate;
+      const annualSave = rotTB * s.storageCost;
+      const save3 = annualSave * 3;
+      const dsrSave3 = s.dsrsYear * (1 + 1.72 + 1.72*1.72) * s.costDSR * 0.60; // 3yr growth ~72% style simplified
+
+      // Auto-sync: Workflow Module + Unlimited Pods included in all DSPM packages
+      if (s.owned.dspm_adv || s.owned.dspm_ent || s.owned.dspm_plus) {
+        const wf = $('lic_workflow_module_plus'); if (wf) wf.checked = true;
+        const up = $('lic_unlimited_pods'); if (up) up.checked = true;
+        s.owned.workflow_module_plus = true;
+        s.owned.unlimited_pods = true;
       }
-      function draw() {
-        ctx.clearRect(0,0,w,h);
-        const g = ctx.createRadialGradient(w*0.7, h*0.2, 0, w*0.5, h*0.5, w*0.7);
-        g.addColorStop(0, 'rgba(26,107,154,0.12)'); g.addColorStop(1, 'rgba(7,13,22,0)');
-        ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
-        particles.forEach(p => {
-          p.x += p.vx; p.y += p.vy;
-          if (p.x < 0 || p.x > w) p.vx *= -1; if (p.y < 0 || p.y > h) p.vy *= -1;
-          ctx.beginPath(); ctx.arc(p.x, p.y, p.z*1.8, 0, Math.PI*2);
-          ctx.fillStyle = 'rgba(61,178,255,' + (0.15 + p.z*0.12) + ')'; ctx.fill();
-        });
-        requestAnimationFrame(draw);
+      const ownedCount = CATALOG.filter(m => s.owned[m.id]).length;
+      // Gaps: not owned but sizing implies need
+      const gaps = [];
+      if (!s.owned.workflow && !s.owned.dspm_adv && !s.owned.dspm_ent && !s.owned.dspm_plus && !s.owned.workflow_module_plus && s.workflows > 0) gaps.push('Workflow Automation / Workflow Module (included in all DSPM packages)');
+      if (!s.owned.workflow && s.owned.dspm_plus) { /* Workflow Module included in Enterprise Plus */ }
+      if (!s.owned.assessment && s.assessments > 0) gaps.push('Assessment Automation');
+      if (!s.owned.datamapping) gaps.push('Data Mapping Automation (RoPA)');
+      if (!s.owned.dsr_portal && s.dsrsYear > 0) gaps.push('DSR Portal & Workbench');
+      if (!s.owned.robotic_dsr && s.dsrSystems > 0) gaps.push('Robotic DSR Automation');
+      if (!s.owned.vendor && s.vendors > 0) gaps.push('Vendor Risk Management');
+      if (!s.owned.breach) gaps.push('Data Breach Management');
+      if (!s.owned.cookie && s.cookieMAU > 0) gaps.push('Cookie Consent Enterprise');
+      if (!s.owned.univ_consent && s.univMAU > 0) gaps.push('Universal Consent');
+      if (!s.owned.mobile && s.mobileMAU > 0) gaps.push('Mobile Consent');
+      if (!s.owned.privacy_notice) gaps.push('Privacy Notice Management');
+      if (!s.owned.dspm_ent && !s.owned.dspm_plus && s.owned.dspm_adv) gaps.push('Upgrade DSPM Advanced → Enterprise / Plus');
+      if (!s.owned.dspm_adv && !s.owned.dspm_ent && !s.owned.dspm_plus) gaps.push('DSPM package (Advanced / Enterprise / Plus)');
+      if (!s.owned.dum_struct && s.structTB > 0) gaps.push('Data Under Management (Structured)');
+      if (!s.owned.dum_unstruct && s.unstructTB > 0) gaps.push('Data Under Management (Unstructured)');
+
+      $('kpiRotTB').textContent = rotTB.toFixed(1) + ' TB';
+      $('kpiStorSave').textContent = fmt(annualSave);
+      $('kpiCloudName').textContent = 'on ' + CLOUD_LABEL[s.cloud];
+      $('kpiStor3').textContent = fmt(save3);
+      $('kpiDsrSave').textContent = fmt(dsrSave3);
+      $('kpiOwned').textContent = ownedCount + ' / ' + CATALOG.length;
+      $('kpiGaps').textContent = gaps.length;
+
+      // Module output cards
+      const modBox = $('moduleOutputs');
+      modBox.innerHTML = '';
+      CATALOG.forEach(m => {
+        const has = s.owned[m.id];
+        const div = document.createElement('div');
+        div.className = 'mod-card ' + (has ? 'owned' : 'missing');
+        div.innerHTML = `<div class="mod-name">${m.name} <span class="badge ${has?'badge-have':'badge-gap'}">${has?'OWNED':'GAP'}</span></div>
+          <div class="mod-out">${m.output(s)}</div>`;
+        modBox.appendChild(div);
+      });
+
+      // Upsell list
+      const ul = $('upsellList');
+      ul.innerHTML = '';
+      $('upsellTitle').textContent = gaps.length
+        ? `Upsell for ${s.company}: ${gaps.length} module(s) recommended`
+        : `${s.company}: strong coverage — consider expansion scope`;
+      (gaps.length ? gaps : ['Expand data volume under management', 'Add AI Governance if using Copilot / internal LLMs']).forEach(g => {
+        const li = document.createElement('li'); li.textContent = g; ul.appendChild(li);
+      });
+
+      // Cloud savings cards
+      const cg = $('cloudGrid');
+      cg.innerHTML = '';
+      ['aws','azure','gcp','oci'].forEach(c => {
+        const val = annualSave * CLOUD_FACTOR[c];
+        const d = document.createElement('div');
+        d.className = 'cloud-card';
+        d.innerHTML = `<div class="cname">${CLOUD_LABEL[c]}</div><div class="cval">${fmt(val)}</div>`;
+        cg.appendChild(d);
+      });
+
+      $('rotNote').textContent = `From ${s.unstructTB} TB unstructured × ${(s.rotPct*100).toFixed(0)}% ROT × ${(s.rotRemediate*100).toFixed(0)}% remediable = ${rotTB.toFixed(1)} TB quarantined. Annual save @ $${s.storageCost}/TB on ${CLOUD_LABEL[s.cloud]}.`;
+
+      // Entitlement table
+      const rows = [
+        ['Structured scan capacity', Math.ceil(s.structTB/100)*100 + ' TB', s.structTB + ' TB needed', s.owned.dum_struct ? 'Covered' : 'Need DUM Structured'],
+        ['Unstructured scan capacity', Math.ceil(s.unstructTB/100)*100 + ' TB', s.unstructTB + ' TB needed', s.owned.dum_unstruct ? 'Covered' : 'Need DUM Unstructured'],
+        ['Robotic DSR systems', (s.owned.robotic_dsr ? Math.ceil(s.dsrSystems/100)*100 : 0) + ' systems', s.dsrSystems + ' systems', s.owned.robotic_dsr ? 'Covered' : 'Need Robotic DSR'],
+        ['Cookie Consent MAU', (s.owned.cookie ? Math.ceil(s.cookieMAU/1e5)*1e5 : 0).toLocaleString(), s.cookieMAU.toLocaleString() + ' MAU', s.owned.cookie ? Math.ceil(s.cookieMAU/1e5)+' unit(s)' : 'Need Cookie'],
+        ['Universal Consent MAU', (s.owned.univ_consent ? Math.ceil(s.univMAU/1e5)*1e5 : 0).toLocaleString(), s.univMAU.toLocaleString(), s.owned.univ_consent ? Math.ceil(s.univMAU/1e5)+' unit(s)' : 'Need Universal'],
+        ['Mobile Consent MAU', (s.owned.mobile ? Math.ceil(s.mobileMAU/1e5)*1e5 : 0).toLocaleString(), s.mobileMAU.toLocaleString(), s.owned.mobile ? Math.ceil(s.mobileMAU/1e5)+' unit(s)' : 'Need Mobile'],
+        ['Assessments', s.owned.assessment ? 'Unlimited' : '0', s.assessments + ' / yr', s.owned.assessment ? 'Covered' : 'Need Assessment'],
+        ['Vendor assessments', s.owned.vendor ? 'Unlimited' : '0', s.vendors + ' / yr', s.owned.vendor ? 'Covered' : 'Need Vendor RM'],
+        ['Breach workflows', s.owned.breach ? '250 / yr' : '0', s.breaches + ' events est.', s.owned.breach ? 'Covered' : 'Need Breach Mgmt'],
+        ['Workflows', s.owned.workflow ? 'Enabled' : 'Not licensed', s.workflows + ' needed', s.owned.workflow ? 'Covered' : 'Need Workflow'],
+        ['RoPA / Data Mapping', s.owned.datamapping ? 'Unlimited flows' : 'Not licensed', 'Continuous', s.owned.datamapping ? 'Covered' : 'Need Data Mapping'],
+      ];
+      let html = '<table style="width:100%;border-collapse:collapse"><tr style="color:#8BA3B8;text-align:left"><th style="padding:0.35rem">Capability</th><th>Entitlement</th><th>Your need</th><th>Status</th></tr>';
+      rows.forEach(r => {
+        const ok = r[3].startsWith('Covered') || r[3].includes('unit');
+        html += `<tr style="border-top:1px solid rgba(255,255,255,0.06)"><td style="padding:0.35rem">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td style="color:${ok?'#2ECC71':'#FF8A80'}">${r[3]}</td></tr>`;
+      });
+      html += '</table>';
+      $('entitleTable').innerHTML = html;
+
+      lastMetrics.owned = ownedCount;
+      lastMetrics.gaps = gaps.length;
+      lastMetrics.save3 = save3;
+      lastMetrics.dsrY = dsrSave3 / 3;
+      updateThree(rotTB, annualSave);
+      updateChart(annualSave, dsrSave3/3);
+    }
+
+    
+    // ========== MULTI 3D VIEWS + ORBIT ==========
+    let threeControls = null;
+    let currentView = 0;
+    let viewGroup = null;
+    let animTargets = []; // { mesh, targetScaleY }
+    let lastMetrics = { rotTB: 1, annualSave: 1, dsrY: 1, owned: 1, gaps: 1, save3: 1 };
+
+    function clearViewGroup() {
+      if (!viewGroup) return;
+      while (viewGroup.children.length) {
+        const o = viewGroup.children[0];
+        viewGroup.remove(o);
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach(m => m.dispose());
+          else o.material.dispose();
+        }
       }
-      resize(); spawn(); draw();
-      window.addEventListener('resize', () => { resize(); spawn(); });
-    })();
+      animTargets = [];
+    }
+
+    function makeMat(color, emissiveIntensity) {
+      return new THREE.MeshStandardMaterial({
+        color, metalness: 0.35, roughness: 0.38,
+        emissive: color, emissiveIntensity: emissiveIntensity || 0.12
+      });
+    }
+
+    function buildView0() { // Cloud savings bars AWS Azure GCP OCI
+      clearViewGroup();
+      const cols = [0xFF9900, 0x0078D4, 0x4285F4, 0xF80000];
+      const labels = ['AWS', 'Azure', 'GCP', 'OCI'];
+      const factors = [1.0, 0.98, 0.95, 0.92];
+      const maxH = 3.6;
+      factors.forEach((f, i) => {
+        const h = Math.max(0.4, f * maxH);
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.15, 1, 1.15), makeMat(cols[i], 0.14));
+        mesh.position.set((i - 1.5) * 2.1, 0.5, 0);
+        mesh.scale.y = 0.2;
+        mesh.userData.targetY = h;
+        viewGroup.add(mesh);
+        animTargets.push(mesh);
+        // base plate
+        const base = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.75, 0.85, 0.08, 24),
+          new THREE.MeshStandardMaterial({ color: 0x1a3050, metalness: 0.5, roughness: 0.6 })
+        );
+        base.position.set((i - 1.5) * 2.1, 0.04, 0);
+        viewGroup.add(base);
+      });
+      // floating label sprites via simple boxes on top - skip text, user sees legend in note
+    }
+
+    function buildView1() { // Value mix - concentric torus / rings + center pillar
+      clearViewGroup();
+      const cols = [0xFF8C42, 0x3DB2FF, 0x00C9A7];
+      const radii = [1.2, 1.9, 2.6];
+      radii.forEach((r, i) => {
+        const torus = new THREE.Mesh(
+          new THREE.TorusGeometry(r, 0.22, 16, 48),
+          makeMat(cols[i], 0.18)
+        );
+        torus.rotation.x = Math.PI / 2;
+        torus.position.y = 0.3 + i * 0.15;
+        torus.scale.set(0.3, 0.3, 0.3);
+        torus.userData.targetScale = 1;
+        viewGroup.add(torus);
+        animTargets.push(torus);
+      });
+      const core = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 2.2, 24), makeMat(0xF1C40F, 0.2));
+      core.position.y = 1.1;
+      core.scale.y = 0.2;
+      core.userData.targetY = 2.2;
+      viewGroup.add(core);
+      animTargets.push(core);
+    }
+
+    function buildView2() { // Module coverage towers - owned vs gaps
+      clearViewGroup();
+      const owned = Math.max(lastMetrics.owned, 1);
+      const gaps = Math.max(lastMetrics.gaps, 0);
+      const total = owned + gaps || 1;
+      // Owned tower (green)
+      const hOwn = 1 + (owned / total) * 3.5;
+      const mOwn = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1, 1.6), makeMat(0x2ECC71, 0.15));
+      mOwn.position.set(-1.4, 0.5, 0);
+      mOwn.scale.y = 0.2;
+      mOwn.userData.targetY = hOwn;
+      viewGroup.add(mOwn);
+      animTargets.push(mOwn);
+      // Gaps tower (red)
+      const hGap = 1 + (gaps / total) * 3.5;
+      const mGap = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1, 1.6), makeMat(0xE74C3C, 0.15));
+      mGap.position.set(1.4, 0.5, 0);
+      mGap.scale.y = 0.2;
+      mGap.userData.targetY = hGap;
+      viewGroup.add(mGap);
+      animTargets.push(mGap);
+      // Connecting beam
+      const beam = new THREE.Mesh(
+        new THREE.BoxGeometry(2.2, 0.12, 0.12),
+        new THREE.MeshStandardMaterial({ color: 0x3DB2FF, metalness: 0.6, roughness: 0.3 })
+      );
+      beam.position.set(0, 2.2, 0);
+      viewGroup.add(beam);
+    }
+
+    function buildView3() { // 3YR projection pillars Y1 Y2 Y3 Total
+      clearViewGroup();
+      const cols = [0x2E86AB, 0x00C9A7, 0x2ECC71, 0xFF8C42];
+      const total = Math.max(lastMetrics.save3, 1);
+      const parts = [total/3, total/3*1.12, total - total/3 - total/3*1.12, total];
+      const maxP = Math.max(...parts, 1);
+      parts.forEach((p, i) => {
+        const h = 0.5 + (p / maxP) * 3.5;
+        const mesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.55, 0.65, 1, 20),
+          makeMat(cols[i], 0.14)
+        );
+        mesh.position.set((i - 1.5) * 1.9, 0.5, 0);
+        mesh.scale.y = 0.2;
+        mesh.userData.targetY = h;
+        viewGroup.add(mesh);
+        animTargets.push(mesh);
+      });
+    }
+
+    const builders = [buildView0, buildView1, buildView2, buildView3];
+
+    function switchView(idx) {
+      currentView = idx;
+      document.querySelectorAll('.vtab').forEach((b, i) => b.classList.toggle('active', i === idx));
+      builders[idx]();
+      if (threeControls) {
+        threeControls.reset();
+        threeCamera.position.set(5.5, 4.5, 9);
+        threeControls.target.set(0, 1.2, 0);
+      }
+    }
 
     function initThree() {
-      const container = $('three-container');
-      const width = container.clientWidth, height = container.clientHeight;
+      const c = $('three-container');
+      const w = c.clientWidth, h = c.clientHeight || 340;
       threeScene = new THREE.Scene();
-      threeCamera = new THREE.PerspectiveCamera(42, width/height, 0.1, 100);
-      threeCamera.position.set(4.5, 4.2, 7.5);
-      threeCamera.lookAt(0, 1.2, 0);
+      threeCamera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+      threeCamera.position.set(5.5, 4.5, 9);
       threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      threeRenderer.setSize(width, height);
-      threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      container.innerHTML = '';
-      container.appendChild(threeRenderer.domElement);
+      threeRenderer.setSize(w, h);
+      threeRenderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      c.innerHTML = '';
+      c.appendChild(threeRenderer.domElement);
+
       threeScene.add(new THREE.AmbientLight(0x88aacc, 0.55));
-      const dir = new THREE.DirectionalLight(0xffffff, 0.85); dir.position.set(5,10,7); threeScene.add(dir);
-      const point = new THREE.PointLight(0x3DB2FF, 0.6, 20); point.position.set(-3,5,3); threeScene.add(point);
-      const grid = new THREE.GridHelper(10, 10, 0x1A6B9A, 0x122034); threeScene.add(grid);
-      const colors = [0x2E86AB, 0x00C9A7, 0x2ECC71];
-      threeBars = [];
-      for (let i = 0; i < 3; i++) {
-        const geo = new THREE.BoxGeometry(1.2, 1, 1.2);
-        const mat = new THREE.MeshStandardMaterial({ color: colors[i], metalness: 0.35, roughness: 0.4, emissive: colors[i], emissiveIntensity: 0.15 });
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set((i-1)*2.2, 0.5, 0);
-        threeScene.add(mesh); threeBars.push(mesh);
-        const ringGeo = new THREE.RingGeometry(0.7, 0.95, 32);
-        const ringMat = new THREE.MeshBasicMaterial({ color: colors[i], transparent: true, opacity: 0.35, side: THREE.DoubleSide });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.x = -Math.PI/2; ring.position.set((i-1)*2.2, 0.02, 0);
-        threeScene.add(ring);
+      const dir = new THREE.DirectionalLight(0xffffff, 0.95);
+      dir.position.set(6, 12, 8);
+      threeScene.add(dir);
+      const fill = new THREE.PointLight(0x3DB2FF, 0.55, 30);
+      fill.position.set(-4, 6, 4);
+      threeScene.add(fill);
+      const grid = new THREE.GridHelper(14, 14, 0x1A6B9A, 0x0d1828);
+      threeScene.add(grid);
+
+      viewGroup = new THREE.Group();
+      threeScene.add(viewGroup);
+
+      // OrbitControls — click drag 360, scroll zoom
+      if (typeof THREE.OrbitControls !== 'undefined') {
+        threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+        threeControls.enableDamping = true;
+        threeControls.dampingFactor = 0.08;
+        threeControls.minDistance = 4;
+        threeControls.maxDistance = 28;
+        threeControls.maxPolarAngle = Math.PI * 0.92;
+        threeControls.target.set(0, 1.2, 0);
       }
-      let t = 0;
+
+      builders[0]();
+
+      document.querySelectorAll('.vtab').forEach(btn => {
+        btn.addEventListener('click', () => switchView(parseInt(btn.dataset.view, 10)));
+      });
+
       function animate() {
         requestAnimationFrame(animate);
-        t += 0.008;
-        threeCamera.position.x = 4.5 * Math.cos(t * 0.35);
-        threeCamera.position.z = 7.5 * Math.sin(t * 0.35) + 2;
-        threeCamera.position.y = 4.2 + Math.sin(t * 0.5) * 0.3;
-        threeCamera.lookAt(0, 1.5, 0);
-        threeBars.forEach((b,i) => { b.rotation.y = Math.sin(t+i)*0.08; });
+        // Smooth height / scale animation
+        animTargets.forEach(m => {
+          if (m.userData.targetY != null) {
+            const ty = m.userData.targetY;
+            m.scale.y += (ty - m.scale.y) * 0.12;
+            m.position.y = m.scale.y / 2;
+          }
+          if (m.userData.targetScale != null) {
+            const ts = m.userData.targetScale;
+            const s = m.scale.x + (ts - m.scale.x) * 0.1;
+            m.scale.set(s, s, s);
+            m.rotation.z += 0.004;
+          }
+        });
+        if (threeControls) threeControls.update();
+        else {
+          // fallback slow auto-orbit if controls missing
+          const t = Date.now() * 0.00025;
+          threeCamera.position.x = 9 * Math.cos(t);
+          threeCamera.position.z = 9 * Math.sin(t);
+          threeCamera.lookAt(0, 1.2, 0);
+        }
         threeRenderer.render(threeScene, threeCamera);
       }
       animate();
+
       window.addEventListener('resize', () => {
-        const w = container.clientWidth, h = container.clientHeight;
-        threeCamera.aspect = w/h; threeCamera.updateProjectionMatrix(); threeRenderer.setSize(w,h);
+        const ww = c.clientWidth, hh = c.clientHeight || 340;
+        threeCamera.aspect = ww / hh;
+        threeCamera.updateProjectionMatrix();
+        threeRenderer.setSize(ww, hh);
       });
     }
 
-    function updateThreeBars(dsr, rot, ins) {
-      if (!threeBars.length) return;
-      const max = Math.max(dsr, rot, ins, 1);
-      const heights = [dsr/max*3.5+0.4, rot/max*3.5+0.4, ins/max*3.5+0.4];
-      threeBars.forEach((bar, i) => {
-        const targetH = heights[i];
-        const current = bar.scale.y || 1;
-        bar.scale.y = current + (targetH - current) * 0.2;
-        bar.position.y = bar.scale.y / 2;
-      });
-      if (Math.abs(threeBars[0].scale.y - heights[0]) > 0.03)
-        requestAnimationFrame(() => updateThreeBars(dsr, rot, ins));
-    }
-
-    function recalc() {
-      const revenue = num('revenue'), marketCap = num('marketCap'), dataTB = num('dataTB');
-      const usSubjects = num('usSubjects'), dsrs = num('dsrs');
-      const piiFiles = num('piiFiles'), costPerFile = num('costPerFile'), mcapDrop = num('mcapDrop')/100;
-      const pctUSPrivacy = num('pctUSPrivacy')/100, usPenalty = num('usPenalty');
-      const aiActCap = num('aiActCap'), gdprCap = num('gdprCap');
-      const dsrGrowth = num('dsrGrowth')/100, costDSR = num('costDSR'), dsrReduce = num('dsrReduce')/100;
-      const rotPct = num('rotPct')/100, storageCost = num('storageCost');
-      const insPerM = num('insPerM'), insReduce = num('insReduce')/100;
-      const pkg = $('dspmPackage').value;
-
-      const sensRisk = piiFiles * costPerFile;
-      const mcapRisk = marketCap * mcapDrop;
-      const usOpt1 = usSubjects * pctUSPrivacy * usPenalty;
-      const usOpt2 = revenue * 0.0002;
-      const euRisk = aiActCap + gdprCap;
-      const compRisk = usOpt1 + euRisk;
-      const dsr3yr = dsrs * (1 + (1+dsrGrowth) + Math.pow(1+dsrGrowth,2));
-      const dsrSave3 = dsr3yr * costDSR * dsrReduce;
-      const rotSave3 = dataTB * rotPct * storageCost * 3;
-      const eff3 = dsrSave3 + rotSave3;
-      const insSaveY = (revenue/1e6) * insPerM * insReduce;
-      const insSave3 = insSaveY * 3;
-      const hard3 = eff3 + insSave3;
-
-      $('kpiSensRisk').textContent = fmt(sensRisk);
-      $('kpiMcapRisk').textContent = fmt(mcapRisk);
-      $('kpiCompRisk').textContent = fmt(compRisk);
-      $('kpiEff').textContent = fmt(eff3);
-      $('kpiIns').textContent = fmt(insSave3);
-      $('kpiTotal').textContent = fmt(hard3);
-      $('dSens').textContent = fmtFull(sensRisk); $('dMcap').textContent = fmtFull(mcapRisk);
-      $('dUS1').textContent = fmtFull(usOpt1); $('dUS2').textContent = fmtFull(usOpt2); $('dEU').textContent = fmtFull(euRisk);
-      $('dDSR').textContent = fmtFull(dsrSave3); $('dROT').textContent = fmtFull(rotSave3);
-      $('dInsY').textContent = fmtFull(insSaveY); $('dIns3').textContent = fmtFull(insSave3);
-      $('projectionNote').textContent = '3D bars: DSR '+fmt(dsrSave3)+' · ROT '+fmt(rotSave3)+' · Insurance '+fmt(insSave3)+' · Total hard $ over 3 years: '+fmt(hard3)+' for '+$('company').value;
-
-      updateThreeBars(dsrSave3, rotSave3, insSave3);
-      updateProjChart(hard3);
-      updateUpsell(pkg, dataTB, dsrs, sensRisk);
-    }
-
-    function updateProjChart(total) {
-      const y1 = total/3, y2 = total/3*1.12, y3 = total - y1 - y2;
-      if (chartProj) chartProj.destroy();
-      Chart.defaults.color = '#8BA3B8'; Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
-      chartProj = new Chart($('chartProjection'), {
-        type: 'bar',
-        data: {
-          labels: ['Year 1','Year 2','Year 3','3YR Total'],
-          datasets: [{ label: 'Hard $ Benefit', data: [y1,y2,y3,total],
-            backgroundColor: ['rgba(46,134,171,0.85)','rgba(0,201,167,0.85)','rgba(46,204,113,0.85)','rgba(255,140,66,0.9)'],
-            borderRadius: 8, borderSkipped: false }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }
-        }
-      });
-    }
-
-    function updateUpsell(pkg, dataTB, dsrs, sensRisk) {
-      const title = $('upsellTitle'), body = $('upsellBody'), list = $('upsellList');
-      list.innerHTML = '';
-      const add = t => { const li = document.createElement('li'); li.textContent = t; list.appendChild(li); };
-      if (pkg === 'none') {
-        title.textContent = 'Recommended: Start with DSPM Enterprise';
-        body.innerHTML = 'Evaluating Securiti? Start with <span class="package-badge pkg-ent">Enterprise</span> for posture, compliance scoring and automation.';
-        ['Cloud Asset & AI Model Discovery','Compliance Management & Risk Scoring','Access Intelligence','Automation Policies'].forEach(add);
-      } else if (pkg === 'advanced') {
-        title.textContent = 'Upsell: Advanced → Enterprise or Enterprise Plus';
-        body.innerHTML = 'On <span class="package-badge pkg-adv">Advanced</span>. Move to <span class="package-badge pkg-ent">Enterprise</span> for posture & automation, or <span class="package-badge pkg-plus">Enterprise Plus</span> for full remediation and unlimited pods.';
-        ['Enterprise: Cloud/AI Discovery, Compliance, Access Intelligence, Automation','Plus: Remediation, Access Controls, Workflow, Unlimited Pods'].forEach(add);
-        if (dataTB >= 50) add('Your data scale benefits from Enterprise+ posture & remediation');
-        if (dsrs >= 50) add('DSR volume pairs well with Workflow & Automation Policies');
-      } else if (pkg === 'enterprise') {
-        title.textContent = 'Upsell: Enterprise → Enterprise Plus';
-        body.innerHTML = 'On <span class="package-badge pkg-ent">Enterprise</span>. <span class="package-badge pkg-plus">Enterprise Plus</span> adds active remediation, access controls, Workflow and unlimited hosted pods.';
-        ['Remediation on Data & Cloud/SaaS','Access Masking & Row Filtering','Workflow Module','Unlimited Customer Hosted Pods'].forEach(add);
-      } else {
-        title.textContent = 'Enterprise Plus — full DSPM capability';
-        body.innerHTML = 'You have <span class="package-badge pkg-plus">Enterprise Plus</span>. Expand into Privacy Automation, AI Governance or broader data coverage for incremental ROI.';
-        add('Consider multi-year expansion and adjacent modules');
+    function updateThree(rotTB, annualSave) {
+      lastMetrics.rotTB = rotTB || 1;
+      lastMetrics.annualSave = annualSave || 1;
+      // refresh current view heights from latest metrics
+      if (currentView === 0) {
+        const factors = [1.0, 0.98, 0.95, 0.92];
+        animTargets.forEach((m, i) => {
+          if (m.userData && factors[i] != null) m.userData.targetY = Math.max(0.4, factors[i] * 3.6);
+        });
+      } else if (currentView === 1) {
+        animTargets.forEach(m => {
+          if (m.userData.targetScale != null) m.userData.targetScale = 1;
+          if (m.userData.targetY != null) m.userData.targetY = 2.2;
+        });
+      } else if (currentView === 2) {
+        const owned = Math.max(lastMetrics.owned, 1);
+        const gaps = Math.max(lastMetrics.gaps, 0.01);
+        const total = owned + gaps;
+        if (animTargets[0]) animTargets[0].userData.targetY = 1 + (owned / total) * 3.5;
+        if (animTargets[1]) animTargets[1].userData.targetY = 1 + (gaps / total) * 3.5;
+      } else if (currentView === 3) {
+        const total = Math.max(lastMetrics.save3, 1);
+        const parts = [total/3, total/3*1.12, total - total/3 - total/3*1.12, total];
+        const maxP = Math.max(...parts, 1);
+        animTargets.forEach((m, i) => {
+          if (parts[i] != null) m.userData.targetY = 0.5 + (parts[i] / maxP) * 3.5;
+        });
       }
     }
 
+    
+    function updateChart(storY, dsrY) {
+      if (chartSave) chartSave.destroy();
+      Chart.defaults.color = '#8BA3B8';
+      chartSave = new Chart($('chartSave'), {
+        type: 'doughnut',
+        data: {
+          labels: ['ROT storage (yr)', 'DSR automation (yr)'],
+          datasets: [{ data: [storY, dsrY], backgroundColor: ['#FF8C42', '#3DB2FF'] }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+      });
+    }
+
     function resetDefaults() {
-      const d = { company:'Example Telecom Co.', industry:'Telecommunications', region:'EMEA', revenue:5000000000, marketCap:5000000000, dataTB:100, usSubjects:1000000, dsrs:100, pctPII:13, piiFiles:29954, costPerFile:183, mcapDrop:7.5, pctUSPrivacy:40, usPenalty:0.39, aiActCap:7500000, gdprCap:10000000, dsrGrowth:72, costDSR:1524, dsrReduce:60, rotPct:28, storageCost:3351, insPerM:1589, insReduce:5, dspmPackage:'advanced' };
-      Object.keys(d).forEach(k => { if ($(k)) $(k).value = d[k]; });
+      $('company').value = 'Example Telecom Co.';
+      $('industry').value = 'Telecommunications';
+      $('cloud').value = 'aws';
+      $('structTB').value = 100; $('unstructTB').value = 100; $('rotPct').value = 28; $('rotRemediate').value = 70;
+      $('storageCost').value = 3351; $('dsrSystems').value = 25; $('dsrsYear').value = 400; $('costDSR').value = 1524;
+      $('cookieMAU').value = 1000000; $('univMAU').value = 200000; $('mobileMAU').value = 200000;
+      $('vendors').value = 50; $('assessments').value = 20; $('workflows').value = 15; $('breaches').value = 4;
+      CATALOG.forEach(m => { const el = $('lic_'+m.id); if (el) el.checked = DEFAULT_OWNED.has(m.id); });
       recalc();
     }
 
-    const chatKnowledge = [
-      { keys:['roi','return','payback','savings','benefit'], answer:'Hard $ benefits come from DSR automation, ROT storage reduction and cyber insurance savings. Risk and compliance show exposure Securiti helps reduce. Edit yellow inputs — the 3D bars and charts update live.' },
-      { keys:['advanced','enterprise','plus','package','upgrade','upsell','dspm'], answer:'DSPM: Advanced (inventory, scan, classify) → Enterprise (posture, AI discovery, compliance, automation) → Enterprise Plus (remediation, access controls, Workflow, unlimited pods). The package dropdown drives the upsell banner.' },
-      { keys:['risk','breach','pii','sensitive','market cap'], answer:'Sensitive Data Risk = PII files × cost per file. Market Cap Risk = Market Cap × % drop after breach (default 7.5%). Securiti improves visibility and controls to reduce likelihood and impact.' },
-      { keys:['compliance','gdpr','cpra','privacy','ai act'], answer:'US risk can be per-subject or % of revenue. EU risk combines capped GDPR and AI Act scenarios. Securiti maps data to frameworks and supports audit evidence.' },
-      { keys:['dsr','request','automation'], answer:'DSR savings use volume, growth, cost per request and % effort removed by automation (default 60%), compounded over 3 years.' },
-      { keys:['rot','storage'], answer:'ROT is typically ~28% of data. Savings = ROT TB × $/TB/year × 3. Securiti helps identify and remediate safely.' },
-      { keys:['insurance','cyber','premium'], answer:'Premium ≈ (Revenue/$1M) × rate per $1M. A modest % reduction from better discovery/controls drives the 3-year insurance savings.' },
-      { keys:['3d','chart','bar','visual'], answer:'The 3D bars show relative hard $ value from DSR, ROT and Insurance. They animate as you change inputs. Hover KPI cards for a 3D tilt effect.' },
-      { keys:['how','use','input'], answer:'Edit any yellow field. KPIs, 3D bars, projection chart and upsell update instantly. Reset defaults restores the sample scenario. Print/PDF for executives.' }
+    // Chat
+    const knowledge = [
+      { keys:['license','bom','module','own','have'], answer:'Use the checkboxes under “Current Securiti licenses” to mirror your BOM or quote. The dashboard shows what each module entitles you to (assessments, RoPA, workflows, DSR, consent slabs, breach workflows) and flags gaps vs your sizing.' },
+      { keys:['rot','storage','quarantine','aws','azure','gcp','oci'], answer:'ROT savings = Unstructured TB × % ROT × % remediable × $/TB/year. The 3D bars and cloud cards show annual cost avoided on AWS, Azure, GCP and OCI using the same volume.' },
+      { keys:['cookie','consent','mau','universal','mobile'], answer:'Cookie, Universal and Mobile Consent are sold in slabs of 100K Monthly Active Unique Users. Units needed = ceil(MAU / 100K). Unlimited domains/apps; pricing is MAU-driven.' },
+      { keys:['dsr','robotic','portal'], answer:'DSR Portal handles intake & workbench. Robotic Automation licenses cover 1–100 data systems each. Savings assume ~60% effort reduction on your annual DSR volume.' },
+      { keys:['assessment','vendor','workflow','breach','ropa','mapping'], answer:'Assessment Automation = unlimited internal assessments. Vendor RM = unlimited vendor assessments. Workflow enables privacy automation. Breach Management includes 250 workflows/year. Data Mapping = unlimited RoPA flows.' },
+      { keys:['dspm','advanced','enterprise','plus','upsell'], answer:'DSPM Advanced = core discovery/classification. Enterprise adds cloud/AI posture, compliance scoring, access intelligence, automation. Plus adds remediation, access controls, Workflow, unlimited pods. Gaps are listed in the upsell panel.' },
+      { keys:['how','use','input'], answer:'1) Enter company & cloud. 2) Check licenses you own. 3) Set TB, MAU, DSR systems, assessments, vendors. 4) Read KPIs, module cards, entitlement table and upsell list. Everything recalculates live.' }
     ];
     function toggleChat() { $('chatPanel').classList.toggle('open'); }
-    function addMsg(text, who) {
-      const div = document.createElement('div'); div.className = 'msg '+who; div.textContent = text;
-      $('chatMessages').appendChild(div); $('chatMessages').scrollTop = $('chatMessages').scrollHeight;
-    }
-    function botReply(q) {
-      const lower = q.toLowerCase();
-      for (const item of chatKnowledge) if (item.keys.some(k => lower.includes(k))) return item.answer;
-      return 'Ask about ROI, DSPM packages (Advanced/Enterprise/Plus), risk, compliance, DSR, ROT, insurance or the 3D charts.';
-    }
+    function addMsg(t, w) { const d = document.createElement('div'); d.className = 'msg '+w; d.textContent = t; $('chatMessages').appendChild(d); $('chatMessages').scrollTop = 1e9; }
     function sendChat() {
-      const input = $('chatInput'); const q = input.value.trim(); if (!q) return;
-      addMsg(q, 'user'); input.value = ''; setTimeout(() => addMsg(botReply(q), 'bot'), 300);
+      const q = $('chatInput').value.trim(); if (!q) return;
+      addMsg(q, 'user'); $('chatInput').value = '';
+      const low = q.toLowerCase();
+      let a = 'Ask about licenses/BOM, ROT storage savings, consent MAU slabs, DSR, assessments, vendor, breach, DSPM packages or how to use the inputs.';
+      for (const k of knowledge) if (k.keys.some(x => low.includes(x))) { a = k.answer; break; }
+      setTimeout(() => addMsg(a, 'bot'), 280);
     }
-    function startChat() {
-      addMsg('Hi — Securiti Value Assistant. Ask about ROI, 3D charts, packages or risk. Quick options:', 'bot');
-      const quick = document.createElement('div'); quick.className = 'quick-q';
-      ['Why upgrade DSPM?','How is ROI calculated?','What do the 3D bars mean?'].forEach(t => {
-        const b = document.createElement('button'); b.textContent = t;
-        b.onclick = () => { $('chatInput').value = t; sendChat(); }; quick.appendChild(b);
-      });
-      $('chatMessages').appendChild(quick);
-    }
-    startChat(); initThree(); recalc();
+
+    // BG particles
+    (function() {
+      const canvas = $('bg-canvas'), ctx = canvas.getContext('2d');
+      let w, h, ps = [];
+      function resize() { w = canvas.width = innerWidth; h = canvas.height = innerHeight; }
+      function spawn() { ps = []; for (let i=0;i<50;i++) ps.push({x:Math.random()*w,y:Math.random()*h,z:Math.random()*2+0.3,vx:(Math.random()-0.5)*0.12,vy:(Math.random()-0.5)*0.12}); }
+      function draw() {
+        ctx.clearRect(0,0,w,h);
+        const g = ctx.createRadialGradient(w*0.7,h*0.15,0,w*0.5,h*0.5,w*0.7);
+        g.addColorStop(0,'rgba(26,107,154,0.1)'); g.addColorStop(1,'rgba(7,13,22,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+        ps.forEach(p => { p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>w)p.vx*=-1; if(p.y<0||p.y>h)p.vy*=-1;
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.z*1.6,0,Math.PI*2); ctx.fillStyle='rgba(61,178,255,'+(0.12+p.z*0.1)+')'; ctx.fill(); });
+        requestAnimationFrame(draw);
+      }
+      resize(); spawn(); draw(); addEventListener('resize', () => { resize(); spawn(); });
+    })();
+
+    buildLicenseChecks();
+    initThree();
+    recalc();
+    addMsg('Hi — select the Securiti modules you own (from your BOM), set data volume & MAU, and I will show entitlements, gaps and ROT storage savings on AWS/Azure/GCP/OCI.', 'bot');
   </script>
 </body>
 </html>
