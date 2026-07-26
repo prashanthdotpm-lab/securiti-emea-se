@@ -407,13 +407,22 @@
 
     let charts = {};
 
+    function onModuleChange() {
+      const anyModule = CATALOG.some(m => !!$('lic_'+m.id)?.checked);
+      // Only when user cleared every module checkbox: set DSPM to None
+      if (!anyModule) {
+        const noneRadio = document.querySelector('input[name=dspm][value=none]');
+        if (noneRadio) noneRadio.checked = true;
+      }
+      recalc();
+    }
     function buildChecks() {
       const box = $('licenseChecks');
       box.innerHTML = '';
       CATALOG.forEach(m => {
         const lab = document.createElement('label');
         lab.className = 'chk-row';
-        lab.innerHTML = `<input type="checkbox" id="lic_${m.id}" ${DEFAULT_OWNED.has(m.id)?'checked':''} onchange="recalc()" /><span>${m.name}</span>`;
+        lab.innerHTML = `<input type="checkbox" id="lic_${m.id}" ${DEFAULT_OWNED.has(m.id)?'checked':''} onchange="onModuleChange()" /><span>${m.name}</span>`;
         box.appendChild(lab);
       });
     }
@@ -451,7 +460,7 @@
       const vendorY = s.owned.vendor ? s.vendors * s.costVendor * s.vendorSavePct : 0;
       const breachY = s.owned.breach ? s.breaches * s.costBreach * s.breachSavePct : 0;
       const ropaY = s.owned.datamapping ? s.ropaHours * s.hourCost : 0;
-      const wfY = (s.owned.workflow || s.dspm !== 'none') ? s.wfHours * s.hourCost : 0;
+      const wfY = s.owned.workflow ? s.wfHours * s.hourCost : 0;
       const noticeY = s.owned.privacy_notice ? s.noticeHours * s.hourCost : 0;
       const consentOwned = s.owned.cookie || s.owned.univ_consent || s.owned.mobile;
       const consentY = consentOwned ? s.consentHours * s.hourCost : 0;
@@ -525,7 +534,7 @@
         { name: 'Vendor RM', y: r.vendorY, on: s.owned.vendor, note: s.vendors + ' vendors' },
         { name: 'Breach Management', y: r.breachY, on: s.owned.breach, note: s.breaches + ' events' },
         { name: 'RoPA / Data Mapping', y: r.ropaY, on: s.owned.datamapping, note: s.ropaHours + ' hrs' },
-        { name: 'Workflow', y: r.wfY, on: s.owned.workflow || s.dspm !== 'none', note: s.wfHours + ' hrs' },
+        { name: 'Workflow', y: r.wfY, on: s.owned.workflow, note: s.wfHours + ' hrs' },
         { name: 'Privacy Notice', y: r.noticeY, on: s.owned.privacy_notice, note: s.noticeHours + ' hrs' },
         { name: 'Consent ops', y: r.consentY, on: s.owned.cookie || s.owned.univ_consent || s.owned.mobile, note: s.consentHours + ' hrs' },
       ];
@@ -595,7 +604,7 @@
         ['Vendor ROI', s.owned.vendor?fmt(r.vendorY)+'/yr':'$0', s.vendors+'/yr', s.owned.vendor?'ok':'miss', s.owned.vendor?'Unlocked':'Gap', ''],
         ['Breach ROI', s.owned.breach?fmt(r.breachY)+'/yr':'$0', s.breaches+' events', s.owned.breach?'ok':'miss', s.owned.breach?'Unlocked':'Gap', ''],
         ['RoPA ROI', s.owned.datamapping?fmt(r.ropaY)+'/yr':'$0', s.ropaHours+' hrs', s.owned.datamapping?'ok':'miss', s.owned.datamapping?'Unlocked':'Gap', ''],
-        ['Workflow ROI', (s.owned.workflow||s.dspm!=='none')?fmt(r.wfY)+'/yr':'$0', s.wfHours+' hrs', (s.owned.workflow||s.dspm!=='none')?'ok':'miss', (s.owned.workflow||s.dspm!=='none')?'Unlocked':'Gap', ''],
+        ['Workflow ROI', s.owned.workflow?fmt(r.wfY)+'/yr':'$0', s.wfHours+' hrs', s.owned.workflow?'ok':'miss', s.owned.workflow?'Unlocked':'Gap', ''],
         ['Consent ops ROI', (s.owned.cookie||s.owned.univ_consent||s.owned.mobile)?fmt(r.consentY)+'/yr':'$0', 'Cookie/Univ/Mobile', (s.owned.cookie||s.owned.univ_consent||s.owned.mobile)?'ok':'miss', (s.owned.cookie||s.owned.univ_consent||s.owned.mobile)?'Unlocked':'Gap', ''],
         ['Privacy Notice ROI', s.owned.privacy_notice?fmt(r.noticeY)+'/yr':'$0', s.noticeHours+' hrs', s.owned.privacy_notice?'ok':'miss', s.owned.privacy_notice?'Covered':'GAP', 'Add for compliance + ops ROI'],
       ];
