@@ -217,14 +217,15 @@
       <input id="company" type="text" value="Example Telecom Co." oninput="recalc()" />
       <label>Industry</label>
       <input id="industry" type="text" value="Telecommunications" oninput="recalc()" />
-      <label>Primary CSP</label>
-      <select id="cloud" onchange="recalc()">
-        <option value="aws">AWS</option>
-        <option value="azure">Azure</option>
-        <option value="gcp">GCP</option>
-        <option value="oci">OCI</option>
-        <option value="mixed">Multi-cloud</option>
-      </select>
+      <label>Cloud provider(s) — select all that apply</label>
+      <div class="radio-group" id="cloudChecks" style="margin-bottom:0.45rem">
+        <label class="chk-row"><input type="checkbox" name="cloud" value="aws" checked onchange="recalc()" /> AWS</label>
+        <label class="chk-row"><input type="checkbox" name="cloud" value="azure" onchange="recalc()" /> Azure</label>
+        <label class="chk-row"><input type="checkbox" name="cloud" value="gcp" onchange="recalc()" /> GCP</label>
+        <label class="chk-row"><input type="checkbox" name="cloud" value="oci" onchange="recalc()" /> OCI</label>
+        <label class="chk-row"><input type="checkbox" name="cloud" value="other" onchange="recalc()" /> Other</label>
+      </div>
+      <p class="hint">Multiple CSPs allowed (multi-cloud customers).</p>
 
       <h2>2. DSPM package (pick one)</h2>
       <div class="radio-group">
@@ -388,7 +389,8 @@
       return '$'+Math.round(n).toLocaleString();
     };
     const fmtN = n => Math.round(n).toLocaleString();
-    const CLOUD = { aws:'AWS', azure:'Azure', gcp:'GCP', oci:'OCI', mixed:'Multi-cloud' };
+    const CLOUD = { aws:'AWS', azure:'Azure', gcp:'GCP', oci:'OCI', other:'Other' };
+    function cloudLabels(arr) { return (arr && arr.length) ? arr.map(c => CLOUD[c] || c).join(', ') : '—'; }
 
     const CATALOG = [
       { id: 'workflow', name: 'Workflow Automation' },
@@ -432,7 +434,7 @@
       const owned = {};
       CATALOG.forEach(m => { owned[m.id] = !!$('lic_'+m.id)?.checked; });
       return {
-        company: $('company').value, cloud: $('cloud').value, dspm, owned,
+        company: $('company').value, clouds: Array.from(document.querySelectorAll('input[name=cloud]:checked')).map(x => x.value), dspm, owned,
         licStructTB: num('licStructTB'), licUnstructTB: num('licUnstructTB'),
         needStructTB: num('needStructTB'), needUnstructTB: num('needUnstructTB'),
         rotFoundTB: num('rotFoundTB'), rotCspCost: num('rotCspCost'), rotPctDone: num('rotPctDone')/100,
@@ -471,6 +473,21 @@
       };
     }
 
+
+    function dumRow(label, lic, need, gap, faq) {
+      // 0 licensed + 0 need → Gap (not Covered)
+      if (lic <= 0 && need <= 0) {
+        return [label, '0 TB licensed', '0 TB estate need', 'miss', 'Gap', 'Enter licensed & estate TB for discovery sizing'];
+      }
+      if (need > lic) {
+        return [label, lic + ' TB licensed', need + ' TB estate need', 'up', 'Short ' + gap + ' TB', faq];
+      }
+      if (lic > 0 && need <= 0) {
+        return [label, lic + ' TB licensed', '0 TB estate need', 'up', 'Need missing', 'Enter estate TB needed for discovery upsell'];
+      }
+      return [label, lic + ' TB licensed', need + ' TB estate need', 'ok', 'Covered', faq];
+    }
+
     function recalc() {
       const s = state();
       const tier = tierLabel(s.dspm);
@@ -486,7 +503,7 @@
       if (s.dspm === 'none')
         gaps.push({ t: 'Add DSPM package', w: 'Discovery baseline for compliance & cyber exposure' });
       if (s.dspm === 'advanced')
-        gaps.push({ t: 'Upgrade Advanced → Enterprise or Plus', w: 'Advanced = discovery/classification only. Enterprise adds posture, compliance, automation. Plus adds remediation so ROT CSP savings count in ROI (' + fmt(s.rotCspCost * s.rotPctDone) + '/yr potential on ' + CLOUD[s.cloud] + ').' });
+        gaps.push({ t: 'Upgrade Advanced → Enterprise or Plus', w: 'Advanced = discovery/classification only. Enterprise adds posture, compliance, automation. Plus adds remediation so ROT CSP savings count in ROI (' + fmt(s.rotCspCost * s.rotPctDone) + '/yr potential on ' + cloudLabels(s.clouds) + ').' });
       if (s.dspm === 'enterprise')
         gaps.push({ t: 'Optional: Enterprise → Plus', w: 'Closed-loop remediation, access masking' });
       if (dumShort > 0)
@@ -596,8 +613,8 @@
 
       const rows = [
         ['DSPM package', tier, tierNeed, tierSt, tierLab, tierReco],
-        ['Structured DUM', s.licStructTB + ' TB licensed', s.needStructTB + ' TB estate need', gapStruct>0?'up':'ok', gapStruct>0?('Short '+gapStruct+' TB'):'Covered', 'License on volume in scope (FAQ)'],
-        ['Unstructured DUM', s.licUnstructTB + ' TB licensed', s.needUnstructTB + ' TB estate need', gapUnstruct>0?'up':'ok', gapUnstruct>0?('Short '+gapUnstruct+' TB'):'Covered', 'Can scan any % of licensed volume'],
+        dumRow('Structured DUM', s.licStructTB, s.needStructTB, gapStruct, 'License on volume in scope (FAQ)'),
+        dumRow('Unstructured DUM', s.licUnstructTB, s.needUnstructTB, gapUnstruct, 'Can scan any % of licensed volume'),
         ['ROT CSP savings', canRot(s.dspm)?fmt(r.rotY)+'/yr':'$0', s.rotFoundTB+' TB found · pay '+fmt(s.rotCspCost)+'/yr', canRot(s.dspm)?'ok':'miss', canRot(s.dspm)?'Unlocked':'Locked', 'ROI = CSP $ you stop paying after quarantine'],
         ['DSR opex', (s.owned.dsr_portal||s.owned.robotic_dsr)?fmt(r.dsrY)+'/yr':'$0', fmtN(s.dsrsYear)+' DSRs', (s.owned.dsr_portal||s.owned.robotic_dsr)?'ok':'miss', (s.owned.dsr_portal||s.owned.robotic_dsr)?'Unlocked':'Need Portal/Robotic', ''],
         ['Assessment ROI', s.owned.assessment?fmt(r.assessY)+'/yr':'$0', s.assessments+'/yr', s.owned.assessment?'ok':'miss', s.owned.assessment?'Unlocked':'Gap', ''],
@@ -698,7 +715,7 @@
       $('explain0').innerHTML = `<strong>Multi-module licensed ROI:</strong> ${fmt(r.totalY)}/yr · ${fmt(total3)} / 3YR. ROT uses your inputs: <em>${s.rotFoundTB} TB found</em>, CSP cost <em>${fmt(s.rotCspCost)}/yr</em>, quarantined ${(s.rotPctDone*100).toFixed(0)}% → save ${canRot(s.dspm)?fmt(r.rotY):'$0 (locked)'}/yr. Other slices = Assessment, Vendor, Breach, DSR, RoPA, Workflow, Consent, Notice when licensed.`;
       $('explain1').innerHTML = `<strong>Module bars:</strong> $0 means not licensed or (for ROT) DSPM tier without remediation. Enter hours/costs on the left to tune each module’s ROI for client management reviews.`;
       $('explain2').innerHTML = `<strong>3-year view</strong> compounds licensed annual hard $ only — use for executive packs and Securiti upsell conversations.`;
-      $('explain3').innerHTML = `<strong>DUM upsell:</strong> Licensed structured ${s.licStructTB} TB vs need ${s.needStructTB} TB (${gapS>0?gapS+' TB short':'covered'}). Unstructured ${s.licUnstructTB} vs ${s.needUnstructTB} (${gapU>0?gapU+' TB short':'covered'}). FAQ: price is on volume in scope, not how much you choose to scan.`;
+      $('explain3').innerHTML = `<strong>DUM upsell:</strong> Structured ${s.licStructTB} TB licensed vs ${s.needStructTB} TB need (${s.licStructTB<=0&&s.needStructTB<=0?'Gap — enter TB':(gapS>0?gapS+' TB short':'covered')}). Unstructured ${s.licUnstructTB} vs ${s.needUnstructTB} (${s.licUnstructTB<=0&&s.needUnstructTB<=0?'Gap — enter TB':(gapU>0?gapU+' TB short':'covered')}). FAQ: price is on volume in scope, not scan %.`;
     }
 
     document.querySelectorAll('.dtab').forEach(btn => {
@@ -712,6 +729,7 @@
 
     function resetDefaults() {
       $('company').value = 'Example Telecom Co.';
+      document.querySelectorAll('input[name=cloud]').forEach(c => { c.checked = (c.value === 'aws'); });
       document.querySelector('input[name=dspm][value=advanced]').checked = true;
       $('licStructTB').value = 100; $('licUnstructTB').value = 100;
       $('needStructTB').value = 180; $('needUnstructTB').value = 250;
